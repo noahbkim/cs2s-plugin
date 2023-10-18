@@ -8,3 +8,6 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(absl)
+
+# TODO see if there's a better way to do this
+set(absl_INCLUDE_DIRS ${absl_SOURCE_DIR} PARENT_SCOPE)

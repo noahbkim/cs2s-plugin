@@ -5,3 +5,10 @@
 [submodule "cs2s"]
 	path = cs2s
 	url = git@github.com:noahbkim/cs2s.git
+[submodule "vendor/metamod-source"]
+	path = vendor/metamod-source
+	url = https://github.com/alliedmodders/metamod-source
+	shallow = true
+[submodule "vendor/metamod-sourc"]
+	path = vendor/metamod-sourc
+	url = https://github.com/alliedmodders/metamod-source

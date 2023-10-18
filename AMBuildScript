@@ -1,0 +1,18 @@
+# vim: set sts=4 ts=8 sw=4 tw=99 et ft=python:
+print('hello, world!')
+import sys
+print(sys.argv)
+
+builder.cxx = builder.DetectCxx()
+if builder.cxx.like('gcc'):
+    builder.cxx.cflags += [
+        '-Wall',
+        '-Werror'
+    ]
+
+program = builder.cxx.Program('sample')
+program.sources += [
+    'src/main.cpp',
+]
+
+builder.Add(program)

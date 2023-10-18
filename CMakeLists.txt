@@ -5,11 +5,10 @@ include(FetchContent)
 project(cs2s-plugin)
 
 add_subdirectory(vendor/funchook)
-add_subdirectory(vendor/zlib)
 add_subdirectory(vendor/absl)
 add_subdirectory(vendor/protobuf)
 
-add_library(cs2proto STATIC
+add_library(cs2s-plugin STATIC
         vendor/GameTracking-CS2/Protobufs/base_gcmessages_csgo.proto
         vendor/GameTracking-CS2/Protobufs/c_peer2peer_netmessages.proto
         vendor/GameTracking-CS2/Protobufs/clientmessages.proto
@@ -52,11 +51,16 @@ add_library(cs2proto STATIC
         vendor/GameTracking-CS2/Protobufs/valveextensions.proto
 )
 
-include_directories(${Protobuf_INCLUDE_DIRS})
 protobuf_generate(
         TARGET cs2proto
         LANGUAGE cpp
+        IMPORT_DIRS ${protobuf_INCLUDE_DIRS}
         APPEND_PATH
 )
 
-target_include_directories(cs2proto PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+#target_link_libraries(cs2s-plugin PRIVATE protobuf absl)
+#target_include_directories(
+#        cs2s-plugin
+#        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+#        PRIVATE ${protobuf_INCLUDE_DIRS} ${absl_INCLUDE_DIRS}
+#)
