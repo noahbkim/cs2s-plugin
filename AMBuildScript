@@ -1,5 +1,15 @@
+#!/bin/python3
 # vim: set sts=4 ts=8 sw=4 tw=99 et ft=python:
-print('hello, world!')
+
+import argparse
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import ambuild2.builder
+
+    builder: ambuild2.builder.Builder
+
+
 import sys
 print(sys.argv)
 

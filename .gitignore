@@ -1,5 +1,6 @@
-cmake-build-*
-build
+/cmake-build-*
+/build
+/local
 
 # IDE
 /.idea

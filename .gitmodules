@@ -9,6 +9,4 @@
 	path = vendor/metamod-source
 	url = https://github.com/alliedmodders/metamod-source
 	shallow = true
-[submodule "vendor/metamod-sourc"]
-	path = vendor/metamod-sourc
-	url = https://github.com/alliedmodders/metamod-source
+	ignore = dirty

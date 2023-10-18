@@ -1,4 +1,6 @@
+#!/bin/python3
 # vim: set sts=4 ts=8 sw=4 tw=99 et:
+
 API_VERSION = '2.2.3'
 
 import sys

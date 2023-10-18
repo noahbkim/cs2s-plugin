@@ -8,59 +8,45 @@ add_subdirectory(vendor/funchook)
 add_subdirectory(vendor/absl)
 add_subdirectory(vendor/protobuf)
 
-add_library(cs2s-plugin STATIC
-        vendor/GameTracking-CS2/Protobufs/base_gcmessages_csgo.proto
-        vendor/GameTracking-CS2/Protobufs/c_peer2peer_netmessages.proto
-        vendor/GameTracking-CS2/Protobufs/clientmessages.proto
-        vendor/GameTracking-CS2/Protobufs/connectionless_netmessages.proto
-        vendor/GameTracking-CS2/Protobufs/cs_gameevents.proto
-        vendor/GameTracking-CS2/Protobufs/cs_usercmd.proto
-        vendor/GameTracking-CS2/Protobufs/cstrike15_gcmessages.proto
-        vendor/GameTracking-CS2/Protobufs/cstrike15_usermessages.proto
-        vendor/GameTracking-CS2/Protobufs/demo.proto
-        vendor/GameTracking-CS2/Protobufs/econ_gcmessages.proto
-        vendor/GameTracking-CS2/Protobufs/engine_gcmessages.proto
-        vendor/GameTracking-CS2/Protobufs/enums_clientserver.proto
-        vendor/GameTracking-CS2/Protobufs/fatdemo.proto
-        vendor/GameTracking-CS2/Protobufs/gameevents.proto
-        vendor/GameTracking-CS2/Protobufs/gcsdk_gcmessages.proto
-        vendor/GameTracking-CS2/Protobufs/gcsystemmsgs.proto
-        vendor/GameTracking-CS2/Protobufs/netmessages.proto
-        vendor/GameTracking-CS2/Protobufs/network_connection.proto
-        vendor/GameTracking-CS2/Protobufs/networkbasetypes.proto
-        vendor/GameTracking-CS2/Protobufs/networksystem_protomessages.proto
-        vendor/GameTracking-CS2/Protobufs/steamdatagram_messages_auth.proto
-        vendor/GameTracking-CS2/Protobufs/steamdatagram_messages_sdr.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_base.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_cloud.steamworkssdk.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_gamenetworkingui.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_helprequest.steamworkssdk.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_oauth.steamworkssdk.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_player.steamworkssdk.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_publishedfile.steamworkssdk.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_steamlearn.steamworkssdk.proto
-        vendor/GameTracking-CS2/Protobufs/steammessages_unified_base.steamworkssdk.proto
-        vendor/GameTracking-CS2/Protobufs/steamnetworkingsockets_messages.proto
-        vendor/GameTracking-CS2/Protobufs/steamnetworkingsockets_messages_certs.proto
-        vendor/GameTracking-CS2/Protobufs/steamnetworkingsockets_messages_udp.proto
-        vendor/GameTracking-CS2/Protobufs/te.proto
-        vendor/GameTracking-CS2/Protobufs/uifontfile_format.proto
-        vendor/GameTracking-CS2/Protobufs/usercmd.proto
-        vendor/GameTracking-CS2/Protobufs/usermessages.proto
-        vendor/GameTracking-CS2/Protobufs/valveextensions.proto
+add_custom_target(
+        metamod-directory ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/metamod
+)
+
+add_custom_target(
+        metamod
+        DEPENDS metamod-directory
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/metamod
+        COMMAND
+            python3 ${CMAKE_SOURCE_DIR}/vendor/metamod-source/configure.py
+            && ambuild ${CMAKE_CURRENT_BINARY_DIR}/metamod
+)
+
+file(GLOB cs2s_PROTO_SRC_FILES ${CMAKE_SOURCE_DIR}/vendor/GameTracking-CS2/Protobufs/*.proto)
+add_library(cs2s-plugin
+        src/main.cpp
+        ${cs2s_PROTO_SRC_FILES}
+)
+
+add_dependencies(cs2s-plugin metamod)
+
+add_custom_target(
+        proto-directory ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/proto
 )
 
 protobuf_generate(
-        TARGET cs2proto
+        TARGET cs2s-plugin
+        DEPENDENCIES proto-directory
         LANGUAGE cpp
         IMPORT_DIRS ${protobuf_INCLUDE_DIRS}
+        PROTOC_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/proto
         APPEND_PATH
 )
 
-#target_link_libraries(cs2s-plugin PRIVATE protobuf absl)
-#target_include_directories(
-#        cs2s-plugin
-#        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-#        PRIVATE ${protobuf_INCLUDE_DIRS} ${absl_INCLUDE_DIRS}
-#)
+target_link_libraries(cs2s-plugin PRIVATE protobuf absl)
+target_include_directories(
+        cs2s-plugin
+        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+        PRIVATE ${protobuf_INCLUDE_DIRS} ${absl_INCLUDE_DIRS}
+)
