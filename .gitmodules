@@ -1,0 +1,7 @@
+[submodule "vendor/GameTracking-CS2"]
+	path = vendor/GameTracking-CS2
+	url = git@github.com:SteamDatabase/GameTracking-CS2.git
+	shallow = true
+[submodule "cs2s"]
+	path = cs2s
+	url = git@github.com:noahbkim/cs2s.git
