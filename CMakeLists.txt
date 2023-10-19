@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.23)
 set(CMAKE_CXX_STANDARD 17)
 
+# Change this to change the name of your plugin
 project(cs2s-plugin)
+
+# Don't change anything below this line unless you know what you're doing
+set(cs2s_PACKAGE_DIR ${CMAKE_CURRENT_BINARY_DIR}/package)
 
 include(cmake/funchook.cmake)
 include(cmake/cs2metamod.cmake)
@@ -12,9 +16,24 @@ if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
 
+add_library(cs2s-plugin SHARED
+        src/plugin.cpp
+)
+
+# Rewrite the plugin.vdf file to build
+set(cs2s_PLUGIN_FILE ${cs2s_PACKAGE_DIR}/addons/${CMAKE_PROJECT_NAME}.vdf)
+configure_file(src/plugin.vdf   ${cs2s_PLUGIN_FILE})
+
+# Prevent prepending "lib" and rename output
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+set_target_properties(cs2s-plugin PROPERTIES LIBRARY_OUTPUT_NAME cs2s-plugin)
+set_target_properties(cs2s-plugin PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${cs2s_PACKAGE_DIR}/addons/${CMAKE_PROJECT_NAME})
+target_compile_definitions(cs2s-plugin PRIVATE CMAKE_PROJECT_NAME=${CMAKE_PROJECT_NAME})
+
 # https://stackoverflow.com/questions/51154151/how-to-check-what-compiler-cmake-is-using
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_definitions(
+    target_compile_definitions(cs2s-plugin PRIVATE
+            COMPILER_GCC
             stricmp=strcasecmp
             _stricmp=strcasecmp
             _snprintf=snprintf
@@ -22,38 +41,37 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             _alloca=alloca
             GNUC
     )
-    add_compile_options(
+    target_compile_options(cs2s-plugin PRIVATE
             -fPIC
             -fno-exceptions
             -fno-rtti
             -msse
             -fno-strict-aliasing
     )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_definitions(cs2s-plugin PRIVATE
+            COMPILER_MSVC
+    )
+    message(WARNING "Unsupported platform!")
 else()
     message(WARNING "Unsupported platform!")
 endif()
 
 if(LINUX)
-    add_compile_definitions(POSIX _LINUX COMPILER_GCC)
-    add_link_options(-shared)
+    target_compile_definitions(cs2s-plugin PRIVATE POSIX _LINUX COMPILER_GCC)
+    target_link_options(cs2s-plugin PRIVATE -shared)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        add_link_options(-static-libgcc)
+        target_link_options(cs2s-plugin PRIVATE -static-libgcc)
     endif()
 else()
     message(WARNING "Unsupported platform!")
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    add_compile_definitions(PLATFORM_64BITS)
+    target_compile_definitions(cs2s-plugin PRIVATE PLATFORM_64BITS)
 endif()
 
 add_compile_definitions(META_IS_SOURCE2)
-
-# Prevent prepending "lib"
-set(CMAKE_SHARED_LIBRARY_PREFIX "")
-add_library(cs2s-plugin SHARED
-        src/plugin.cpp
-)
 
 add_dependencies(cs2s-plugin cs2metamod cs2proto)
 target_include_directories(cs2s-plugin

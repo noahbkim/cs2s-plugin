@@ -7,4 +7,5 @@ FetchContent_Declare(
         OVERRIDE_FIND_PACKAGE
 )
 
+set(FUNCHOOK_INSTALL OFF)
 FetchContent_MakeAvailable(funchook)

@@ -1,4 +1,4 @@
-find_package(protobuf REQUIRED)
+find_package(Protobuf REQUIRED)
 
 file(GLOB cs2proto_SRC_FILES ${CMAKE_SOURCE_DIR}/vendor/GameTracking-CS2/Protobufs/*.proto)
 add_library(cs2proto STATIC ${cs2proto_SRC_FILES})
