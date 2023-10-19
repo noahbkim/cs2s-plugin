@@ -91,6 +91,7 @@ chown -R steam:steam ~steam/main/game/csgo/addons/
 #   Game    csgo/addons/metamod
 #   GameBin csgo/addons/metamod/bin
 # Under GameInfo/FileSystem/SearchPaths
+# TODO: figure out if this is actually correct or if you can do less
 nano ~steam/main/game/csgo/gameinfo.gi
 
 # Build your plugin
@@ -102,3 +103,33 @@ cp cs2s-plugin.so ~steam/main/game/csgo/addons/
 chmod -R 775 ~steam/main/game/csgo/addons/cs2s-plugin.so
 chown -R steam:steam ~steam/main/game/csgo/addons/cs2s-plugin.so
 ```
+
+## TODO
+
+- Fix funchook
+- VDF stuff
+- Extend overlay and docs
+
+## References
+
+To be categorized/explained.
+
+- https://github.com/Soren90/cs2-docker/blob/main/Dockerfile
+- https://github.com/steamcmd/docker
+- https://developer.valvesoftware.com/wiki/Counter-Strike_2/Dedicated_Servers
+- https://developer.valvesoftware.com/wiki/SteamCMD
+- https://developer.valvesoftware.com/wiki/Metamod_(Source)
+- https://github.com/truckersmp-cli/truckersmp-cli/issues/331  # Bug with 0x10C state
+- https://github.com/alliedmodders/metamod-source
+- https://wiki.alliedmods.net/Building_SourceMod
+- https://github.com/Source2ZE/CS2Fixes/tree/main
+- https://github.com/Poggicek/cs2-docs
+- https://cs2.poggu.me/
+- https://wiki.archlinux.org/title/Overlay_filesystem
+- https://docs.google.com/document/d/1v8QtbUtGAf6OapE9iWn4Y4STA7Scn_hr1Yih1nf2_BA/edit
+- https://github.com/kubo/funchook
+- https://wiki.alliedmods.net/AMBuild_Tutorial
+- https://cmake.org/cmake/help/book/mastering-cmake/chapter/Custom%20Commands.html
+- https://stackoverflow.com/questions/9298278/cmake-print-out-all-accessible-variables-in-a-script
+- https://stackoverflow.com/questions/1260748/how-do-i-remove-a-submodule
+- https://www.reddit.com/r/cs2/comments/16zjaid/counterstrike_2_metamod_installation_guide/
