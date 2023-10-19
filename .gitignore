@@ -1,6 +1,13 @@
+# Build
 /cmake-build-*
+/conan-build-*
 /build
+
+# Testing
 /local
+
+# CMake
+/CMakeUserPresets.json
 
 # IDE
 /.idea

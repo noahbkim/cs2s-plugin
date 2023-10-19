@@ -1,0 +1,7 @@
+[requires]
+protobuf/3.21.12
+abseil/20230125.3
+
+[generators]
+CMakeDeps
+CMakeToolchain

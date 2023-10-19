@@ -1,34 +1,11 @@
 cmake_minimum_required(VERSION 3.23)
 set(CMAKE_CXX_STANDARD 17)
-include(FetchContent)
 
 project(cs2s-plugin)
 
-add_subdirectory(vendor/funchook)
-add_subdirectory(vendor/absl)
-add_subdirectory(vendor/protobuf)
-
-add_custom_target(
-        metamod-directory ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/metamod
-)
-
-add_custom_target(
-        metamod
-        DEPENDS metamod-directory
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/metamod
-        COMMAND
-            ${CMAKE_COMMAND} -E env HL2SDKCS2=${CMAKE_SOURCE_DIR}/vendor/hl2sdk
-                python3 ${CMAKE_SOURCE_DIR}/vendor/metamod-source/configure.py
-                    --sdks cs2 --disable-auto-versioning
-            && ambuild
-)
-
-file(GLOB cs2s_PROTO_SRC_FILES ${CMAKE_SOURCE_DIR}/vendor/GameTracking-CS2/Protobufs/*.proto)
-add_library(cs2s-plugin SHARED
-        src/plugin.cpp
-        ${cs2s_PROTO_SRC_FILES}
-)
+include(cmake/funchook.cmake)
+include(cmake/cs2metamod.cmake)
+include(cmake/cs2proto.cmake)
 
 # https://stackoverflow.com/questions/9160335/os-specific-instructions-in-cmake-how-to
 if(UNIX AND NOT APPLE)
@@ -72,7 +49,13 @@ endif()
 
 add_compile_definitions(META_IS_SOURCE2)
 
-add_dependencies(cs2s-plugin metamod)
+# Prevent prepending "lib"
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+add_library(cs2s-plugin SHARED
+        src/plugin.cpp
+)
+
+add_dependencies(cs2s-plugin cs2metamod cs2proto)
 target_include_directories(cs2s-plugin
         PRIVATE ${CMAKE_SOURCE_DIR}/vendor/hl2sdk/public
         PRIVATE ${CMAKE_SOURCE_DIR}/vendor/hl2sdk/public/engine
@@ -84,21 +67,7 @@ target_include_directories(cs2s-plugin
         PRIVATE ${CMAKE_SOURCE_DIR}/vendor/metamod-source/core/sourcehook
 )
 
-add_custom_target(
-        proto-directory ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/proto
-)
-
-protobuf_generate(
-        TARGET cs2s-plugin
-        DEPENDENCIES proto-directory
-        LANGUAGE cpp
-        IMPORT_DIRS ${protobuf_INCLUDE_DIRS}
-        PROTOC_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/proto
-        APPEND_PATH
-)
-
-target_link_libraries(cs2s-plugin PRIVATE protobuf absl)
+target_link_libraries(cs2s-plugin cs2proto cs2interfaces cs2libtier0 cs2tier1)
 target_include_directories(
         cs2s-plugin
         PUBLIC ${CMAKE_CURRENT_BINARY_DIR}

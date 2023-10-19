@@ -1,3 +1,5 @@
+include(FetchContent)
+
 FetchContent_Declare(
         funchook
         GIT_REPOSITORY https://github.com/kubo/funchook
