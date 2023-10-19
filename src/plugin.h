@@ -1,9 +1,19 @@
 #pragma once
 
+#include <tier0/logging.h>
+
 #include <ISmmPlugin.h>
+
+#include <cs2s/plugin/library.h>
 
 class Plugin final : public ISmmPlugin, public IMetamodListener
 {
+private:
+    cs2s::plugin::LibraryService libraries;
+
+public:
+    explicit Plugin(LoggingChannelID_t l);
+
 public:
     bool Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) override;
     bool Unload(char* error, size_t maxlen) override;

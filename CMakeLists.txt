@@ -20,9 +20,16 @@ add_library(cs2s-plugin SHARED
         src/plugin.cpp
 )
 
+# Configure the lib stuff modularly, we'll extract this into a lib maybe later
+target_include_directories(cs2s-plugin PRIVATE lib/)
+target_sources(cs2s-plugin PRIVATE
+        lib/cs2s/plugin/library.cpp
+        lib/cs2s/plugin/shared.cpp
+)
+
 # Rewrite the plugin.vdf file to build
 set(cs2s_PLUGIN_FILE ${cs2s_PACKAGE_DIR}/addons/${CMAKE_PROJECT_NAME}.vdf)
-configure_file(src/plugin.vdf   ${cs2s_PLUGIN_FILE})
+configure_file(src/plugin.vdf ${cs2s_PLUGIN_FILE})
 
 # Prevent prepending "lib" and rename output
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
@@ -75,6 +82,7 @@ add_compile_definitions(META_IS_SOURCE2)
 
 add_dependencies(cs2s-plugin cs2metamod cs2proto)
 target_include_directories(cs2s-plugin
+        PRIVATE ${CMAKE_SOURCE_DIR}/vendor/  # Hail Mary for debugging path
         PRIVATE ${CMAKE_SOURCE_DIR}/vendor/hl2sdk/public
         PRIVATE ${CMAKE_SOURCE_DIR}/vendor/hl2sdk/public/engine
         PRIVATE ${CMAKE_SOURCE_DIR}/vendor/hl2sdk/public/mathlib
@@ -85,9 +93,12 @@ target_include_directories(cs2s-plugin
         PRIVATE ${CMAKE_SOURCE_DIR}/vendor/metamod-source/core/sourcehook
 )
 
+find_package(protobuf REQUIRED)
+find_package(absl REQUIRED)
+target_link_libraries(cs2s-plugin protobuf::protobuf abseil::abseil)
 target_link_libraries(cs2s-plugin cs2proto cs2interfaces cs2libtier0 cs2tier1)
-target_include_directories(
-        cs2s-plugin
-        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
-        PRIVATE ${protobuf_INCLUDE_DIRS} ${absl_INCLUDE_DIRS}
+target_include_directories(cs2s-plugin
+        PRIVATE ${funchook_INCLUDE_DIRS}
+        PRIVATE ${absl_INCLUDE_DIRS}
+        PRIVATE ${protobuf_INCLUDE_DIRS}
 )

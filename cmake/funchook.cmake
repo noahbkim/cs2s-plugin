@@ -9,3 +9,5 @@ FetchContent_Declare(
 
 set(FUNCHOOK_INSTALL OFF)
 FetchContent_MakeAvailable(funchook)
+
+set(funchook_INCLUDE_DIRS ${funchook_SOURCE_DIR}/include)
