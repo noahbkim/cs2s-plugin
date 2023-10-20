@@ -146,6 +146,7 @@ VDF file correctly (but it is present among the `package` artifacts).
 
 ## TODO
 
+- Make a volume for conan dependencies so we don't have to recompile them every time!
 - Decide on a structure for `lib/`.
     It currently contains plugin runtime utils and SDK polyfills.
     Both (or at least the latter) could be formalized into separate projects.

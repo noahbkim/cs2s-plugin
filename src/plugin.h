@@ -10,7 +10,7 @@
 #include <cs2s/plugin/library.h>
 #include <cs2s/plugin/detour.h>
 
-void UTIL_SayTextFilter(IRecipientFilter& filter, const char *pText, class CBasePlayer* pEntity, bool bChat);
+void UTIL_ClientPrintAll(int msg_dest, const char *msg_name, const char *param1 = NULL, const char *param2 = NULL, const char *param3 = NULL, const char *param4 = NULL);
 
 class Plugin final : public ISmmPlugin, public IMetamodListener
 {
@@ -30,7 +30,7 @@ private:
     IGameEventSystem* game_event_system{nullptr};
 
     // Reversed
-    decltype(UTIL_SayTextFilter)* say_text_filter{nullptr};
+    decltype(UTIL_ClientPrintAll)* client_print_all{nullptr};
 
 public:
     explicit Plugin(LoggingChannelID_t log);

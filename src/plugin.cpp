@@ -4,11 +4,11 @@
 
 #include <Color.h>
 
-#include <cstrike15_usermessages.pb.h>
+//#include <cstrike15_usermessages.pb.h>
 #include <usermessages.pb.h>
 #include <cs_gameevents.pb.h>
-#include <gameevents.pb.h>
-#include <te.pb.h>
+//#include <gameevents.pb.h>
+//#include <te.pb.h>
 
 #include <cs2s/plugin/detour.h>
 #include <cs2s/plugin/library.h>
@@ -19,15 +19,15 @@
 
 // TODO: figure out a cleaner way to declare this
 #ifdef WIN32
-const uint8_t UTIL_SAY_TEXT_FILTER_PATTERN[] = {0x48, 0x89, 0x5c, 0x24, 0x2a, 0x55, 0x56, 0x57, 0x48, 0x8d, 0x6c, 0x24, 0x2a, 0x48, 0x81, 0xec, 0x2a, 0x2a, 0x2a, 0x2a, 0x49, 0x8b, 0xd8};
+const uint8_t UTIL_CLIENT_PRINT_ALL_PATTERN[] = {0x48, 0x89, 0x5c, 0x24, 0x8, 0x48, 0x89, 0x6c, 0x24, 0x10, 0x48, 0x89, 0x74, 0x24, 0x18, 0x57, 0x48, 0x81, 0xec, 0x70, 0x1, 0x2a, 0x2a, 0x8b, 0xe9};
 #else
-const uint8_t UTIL_SAY_TEXT_FILTER_PATTERN[] = {0x55, 0x48, 0x89, 0xe5, 0x41, 0x57, 0x49, 0x89, 0xd7, 0x31, 0xd2, 0x41, 0x56, 0x4c, 0x8d, 0x75, 0x98};
+const uint8_t UTIL_CLIENT_PRINT_ALL_PATTERN[] = {0x55, 0x48, 0x89, 0xe5, 0x41, 0x57, 0x49, 0x89, 0xd7, 0x41, 0x56, 0x49, 0x89, 0xf6, 0x41, 0x55, 0x41, 0x89, 0xfd};
 #endif
 
 // Declare hook for requested DLL function
-cs2s::plugin::Pattern<decltype(UTIL_SayTextFilter)> UTIL_SayTextFilterPattern{
-    UTIL_SAY_TEXT_FILTER_PATTERN,
-    sizeof(UTIL_SAY_TEXT_FILTER_PATTERN),
+cs2s::plugin::Pattern<decltype(UTIL_ClientPrintAll)> UTIL_ClientPrintAllPattern{
+    UTIL_CLIENT_PRINT_ALL_PATTERN,
+    sizeof(UTIL_CLIENT_PRINT_ALL_PATTERN),
 };
 
 // Set up Source 2 logging. Provides macros like `Log_Msg`, `Log_Warning`, and
@@ -85,8 +85,13 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
         return false;
     }
 
-    this->say_text_filter = server_library.Match(UTIL_SayTextFilterPattern);
-    Log_Msg(this->log, "[CS2S] Found UTIL_say_text_filter at %p\n", say_text_filter);
+    this->client_print_all = server_library.Match(UTIL_ClientPrintAllPattern);
+    if (!this->client_print_all)
+    {
+        Log_Error(this->log, "[CS2S] Did not find UTIL_ClientPrintAll!\n");
+        return false;
+    }
+    Log_Msg(this->log, "[CS2S] Found UTIL_ClientPrintAll at %p\n", this->client_print_all);
 
     // Request interfaces
     GET_V_IFACE_CURRENT(GetEngineFactory, this->engine_server_2, IVEngineServer2, SOURCE2ENGINETOSERVER_INTERFACE_VERSION);
@@ -103,6 +108,11 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
     return true;
 }
 
+#define HUD_PRINTNOTIFY		1
+#define HUD_PRINTCONSOLE	2
+#define HUD_PRINTTALK		3
+#define HUD_PRINTCENTER		4
+
 void Plugin::PostEventAbstract(
     CSplitScreenSlot nSlot,
     bool bLocalOnly,
@@ -117,7 +127,8 @@ void Plugin::PostEventAbstract(
     NetMessageInfo_t* info = pEvent->GetNetMessageInfo();
     if (info->m_MessageId == GE_FireBulletsId)
     {
-        Log_Msg(this->log, "[CS2S] Fire!\n");
+        this->client_print_all(HUD_PRINTTALK, "[CS2S] Fire!\n", nullptr, nullptr, nullptr, nullptr);
+//        Log_Msg(this->log, "[CS2S] Fire!\n");
     }
 }
 
