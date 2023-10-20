@@ -1,7 +1,7 @@
 # CS2 Server Plugin Template
 
-This repository facilitates convenient development of CS2 server plugins.
-It uses CMake instead of AMBuild, but in exchange, the build is much more flexible.
+This repository serves as a template for developing CS2 server plugins.
+It uses CMake instead of AMBuild, but in exchange, the is much more flexible regarding build steps and dependencies.
 
 ## CS2S
 
@@ -52,7 +52,8 @@ Once the installation is complete, you can proceed to the setup.
 
 Next, you'll need to get your C++ build environment set up.
 I've elected to use CMake rather than AMBuild because I wanted to use [Conan](https://conan.io/), a C++ package manager.
-As you can see in [`conanfile.txt`](./conanfile.txt), we're installing `protobuf` and `abseil`.
+In addition slimming down the build, Conan makes it super easy to add your own dependencies to your plugin.
+As you can see in [`conanfile.txt`](./conanfile.txt), we're just installing `protobuf` and `abseil`.
 
 In the Docker container, this repository directory is mounted as `/work`, which I'll use in the console prompt.
 If you're developing locally, replace `/work` with your `cs2s-plugin` directory.
