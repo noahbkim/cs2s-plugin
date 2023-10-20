@@ -21,7 +21,7 @@ Next, optionally, build the Docker environment.
 This requires having Docker installed; I've only tested with Docker Desktop.
 If you would rather develop directly on your machine, the only thing you need to do for this section is install CS2.
 
-```console
+```shell
 # Build the compose setup. Provisions a persistent volume for the game files
 # under `/cs2` and the directory where this repository is cloned as `/work`.
 # Don't worry about having to repeat the CS2 installation process; the `/cs2`
@@ -34,8 +34,10 @@ user@host cs2s-plugin $ docker compose cs2s exec zsh
 
 # Running this command should open a terminal in your virtual container. Your
 # prompt will hopefully look something like the below where instead of
-# `container`, you'll see a hex string (the container's Docker ID).
-user@container /work
+# `container`, you'll see a hex string (the container's Docker ID). If you
+# like the `zsh` config, you can either fuck with it yourself or just use
+# `docker compose cs2s exec bash`.
+user@container /work $
 
 # You can leave the container running in the background without a shell
 # attached (and it'll take up minimal resources because it won't be executing
@@ -55,7 +57,7 @@ As you can see in [`conanfile.txt`](./conanfile.txt), we're installing `protobuf
 In the Docker container, this repository directory is mounted as `/work`, which I'll use in the console prompt.
 If you're developing locally, replace `/work` with your `cs2s-plugin` directory.
 
-```console
+```shell
 # THIS STEP IS ALREADY DONE FOR YOU IN THE CS2S DOCKER CONTAINER.
 # Generate a release (default) and debug Conan profile for dependencies. Note
 # that you actually have to edit the second one to change it to debug!
