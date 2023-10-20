@@ -101,7 +101,25 @@ bool Plugin::Unload(char* error, size_t maxlen)
     return PluginService::UnloadAll(error, maxlen, this->libraries, this->detours, this->events);
 }
 
+GameEventKeySymbol_t attacker_symbol("attacker");
+GameEventKeySymbol_t userid_symbol("userid");
+
+#define HUD_PRINTNOTIFY		1
+#define HUD_PRINTCONSOLE	2
+#define HUD_PRINTTALK		3
+#define HUD_PRINTCENTER		4
+
 void Plugin::FireGameEvent(IGameEvent *event)
 {
-    Log_Msg(this->log, "[CS2S] Got event %s\n", event->GetName());
+    Log_Msg(this->log, "[CS2S] Got event %d (%s)\n", event->GetID(), event->GetName());
+    switch (event->GetID())
+    {
+    case 53:
+    {
+        int attacker = event->GetInt(attacker_symbol);
+        int victim = event->GetInt(userid_symbol);
+        std::string buffer = "[CS2S] Player " + std::to_string(attacker) + " killed " + std::to_string(victim) + "\n";
+        this->client_print_all(HUD_PRINTTALK, buffer.c_str(), nullptr, nullptr, nullptr, nullptr);
+    }
+    }
 }
