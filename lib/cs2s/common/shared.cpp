@@ -1,9 +1,19 @@
 #include "shared.h"
 
-#include "tier0/memdbgon.h"
+#include <tier0/memdbgon.h>
 
 #ifdef WIN32
 #include <psapi.h>
+#else
+#include <cstdint>
+#include <elf.h>
+#include <link.h>
+#endif
+
+namespace cs2s::common
+{
+
+#ifdef WIN32
 
 int dlinfo(HINSTANCE handle, dlinfo_t* out)
 {
@@ -18,12 +28,8 @@ int dlinfo(HINSTANCE handle, dlinfo_t* out)
     out->size = module_info.SizeOfImage;
     return 0;
 }
+
 #else
-
-#include <cstdint>
-
-#include <elf.h>
-#include <link.h>
 
 // https://github.com/Source2ZE/CS2Fixes/blob/db679357c84e61c979623b15b1454537c128cf56/src/utils/plat_unix.cpp
 // https://github.com/alliedmodders/sourcemod/blob/master/core/logic/MemoryUtils.cpp#L502-L587
@@ -110,3 +116,5 @@ int dlinfo(HINSTANCE hModule, dlinfo_t* out)
 }
 
 #endif
+
+}

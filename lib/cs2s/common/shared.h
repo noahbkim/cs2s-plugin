@@ -6,6 +6,9 @@
 #include <metamod_oslink.h>
 #endif
 
+namespace cs2s::common
+{
+
 struct dlinfo_t
 {
     void* address{nullptr};
@@ -13,3 +16,5 @@ struct dlinfo_t
 };
 
 int dlinfo(HINSTANCE module, dlinfo_t* info);
+
+}

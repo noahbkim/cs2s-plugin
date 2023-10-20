@@ -2,7 +2,7 @@
 
 #include <platform.h>
 
-#include "shared.h"
+#include "cs2s/common/shared.h"
 
 namespace cs2s::plugin
 {
@@ -37,13 +37,13 @@ bool PluginLibraryService::Load(PluginId id, ISmmAPI* ismm, char* error, size_t 
 {
     this->metamod = ismm;
     this->game_directory = Plat_GetGameDirectory();
-    Log_Msg(this->log, "[CS2S] Loaded library service\n");
+    Log_Msg(this->log, "[CS2S:libraries] Loaded library service\n");
     return true;
 }
 
 bool PluginLibraryService::Unload(char* error, size_t maxlen)
 {
-    Log_Msg(this->log, "[CS2S] Unloaded library service\n");
+    Log_Msg(this->log, "[CS2S:libraries] Unloaded library service\n");
     return true;
 }
 
@@ -60,21 +60,21 @@ bool PluginLibraryService::Resolve(const std::string& subpath, std::string name,
     HINSTANCE handle = dlmount(path.c_str());
     if (!handle)
     {
-        Log_Error(this->log, "[CS2S] Failed to resolve %s, tried %s\n", name.c_str(), path.c_str());
+        Log_Error(this->log, "[CS2S:libraries] Failed to resolve %s, tried %s\n", name.c_str(), path.c_str());
         return false;
     }
 
     // Determine the base point and size
-    dlinfo_t info;
-    int error = dlinfo(handle, &info);
+    cs2s::common::dlinfo_t info;
+    int error = cs2s::common::dlinfo(handle, &info);
     if (error != 0)
     {
-        Log_Error(this->log, "[CS2S] Failed to inspect %s, received error code %d\n", path.c_str(), error);
+        Log_Error(this->log, "[CS2S:libraries] Failed to inspect %s, received error code %d\n", path.c_str(), error);
         return false;
     }
 
     // Return as complete struct
-    Log_Msg(this->log, "[CS2S] Resolved %s to %p\n", path.c_str(), handle);
+    Log_Msg(this->log, "[CS2S:libraries] Resolved %s to %p\n", path.c_str(), handle);
     library->path = std::move(path);
     library->name = std::move(name);
     library->handle = handle;

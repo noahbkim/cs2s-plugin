@@ -24,8 +24,9 @@ add_library(cs2s-plugin SHARED
 target_include_directories(cs2s-plugin PRIVATE lib/)
 target_sources(cs2s-plugin PRIVATE
         lib/cs2s/plugin/library.cpp
-        lib/cs2s/plugin/shared.cpp
+        lib/cs2s/plugin/event.cpp
         lib/cs2s/plugin/detour.cpp
+        lib/cs2s/common/shared.cpp
         lib/cs2s/sdk/server/recipientfilter.cpp
 )
 

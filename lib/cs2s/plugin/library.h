@@ -44,6 +44,12 @@ struct Library
     size_t size;
 
 public:
+    ~Library()
+    {
+        dlclose(this->handle);
+    }
+
+public:
     void* Match(const uint8_t* pattern_data, size_t pattern_size) const;
 
     template<typename T>

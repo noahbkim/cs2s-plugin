@@ -1,18 +1,20 @@
 #include "plugin.h"
 
 #include <cstdio>
+#include <stdint.h>
 
 #include <Color.h>
 
-//#include <cstrike15_usermessages.pb.h>
+#include <cstrike15_usermessages.pb.h>
 #include <usermessages.pb.h>
 #include <cs_gameevents.pb.h>
-//#include <gameevents.pb.h>
+#include <gameevents.pb.h>
 //#include <te.pb.h>
 
 #include <cs2s/plugin/detour.h>
 #include <cs2s/plugin/library.h>
 #include <cs2s/sdk/server/recipientfilter.h>
+#include <cs2s/common/virtual.h>
 
 #define STR_LITERAL(D) #D
 #define STR(D) STR_LITERAL(D)
@@ -39,25 +41,10 @@ DEFINE_LOGGING_CHANNEL_NO_TAGS(LOG_CS2S, STR(CMAKE_PROJECT_NAME), 0, LV_MAX, Col
 Plugin g_Plugin(LOG_CS2S);
 PLUGIN_EXPOSE(Plugin, g_Plugin);
 
-// Declare Metamod hooks; must come after PLUGIN_EXPOSE as it depends on globals.
-SH_DECL_HOOK8_void(
-    IGameEventSystem,
-    PostEventAbstract,
-    SH_NOATTRIB,
-    0,
-    CSplitScreenSlot,
-    bool,
-    int,
-    const uint64*,
-    INetworkSerializable*,
-    const void*,
-    unsigned long,
-    NetChannelBufType_t
-);
-
 Plugin::Plugin(LoggingChannelID_t log)
     : log(log)
     , libraries(log)
+    , events(log)
     , detours(log)
 {
 }
@@ -74,7 +61,7 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
     PLUGIN_SAVEVARS();
 
     Log_Msg(this->log, "[CS2S] Hello, world!\n");
-    if (!PluginService::LoadAll(id, ismm, error, maxlen, late, this->libraries, this->detours))
+    if (!PluginService::LoadAll(id, ismm, error, maxlen, late, this->libraries, this->detours, this->events))
     {
         return false;
     }
@@ -102,34 +89,10 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
     GET_V_IFACE_ANY(GetEngineFactory, this->network_server_service, INetworkServerService, NETWORKSERVERSERVICE_INTERFACE_VERSION);
     GET_V_IFACE_ANY(GetEngineFactory, this->game_event_system, IGameEventSystem, GAMEEVENTSYSTEM_INTERFACE_VERSION);
 
-    // Bind events
-    SH_ADD_HOOK_MEMFUNC(IGameEventSystem, PostEventAbstract, this->game_event_system, this, &Plugin::PostEventAbstract, false);
+    // Register events
+    this->events.Subscribe("player_death", this);
 
     return true;
-}
-
-#define HUD_PRINTNOTIFY		1
-#define HUD_PRINTCONSOLE	2
-#define HUD_PRINTTALK		3
-#define HUD_PRINTCENTER		4
-
-void Plugin::PostEventAbstract(
-    CSplitScreenSlot nSlot,
-    bool bLocalOnly,
-    int nClientCount,
-    const uint64* clients,
-    INetworkSerializable* pEvent,
-    const void* pData,
-    unsigned long nSize,
-    NetChannelBufType_t bufType
-)
-{
-    NetMessageInfo_t* info = pEvent->GetNetMessageInfo();
-    if (info->m_MessageId == GE_FireBulletsId)
-    {
-        this->client_print_all(HUD_PRINTTALK, "[CS2S] Fire!\n", nullptr, nullptr, nullptr, nullptr);
-//        Log_Msg(this->log, "[CS2S] Fire!\n");
-    }
 }
 
 // Called when the plugin is unloaded by Metamod. You can manually unload a
@@ -139,9 +102,11 @@ bool Plugin::Unload(char* error, size_t maxlen)
     ConVar_Unregister();
     Log_Msg(this->log, "[CS2S] Goodbye, world!\n");
 
-    // Remove hooks.
-    SH_REMOVE_HOOK_MEMFUNC(IGameEventSystem, PostEventAbstract, this->game_event_system, this, &Plugin::PostEventAbstract, false);
-
     // Every service should get a chance to unload.
-    return PluginService::UnloadAll(error, maxlen, this->libraries, this->detours);
+    return PluginService::UnloadAll(error, maxlen, this->libraries, this->detours, this->events);
+}
+
+void Plugin::FireGameEvent(IGameEvent *event)
+{
+    Log_Msg(this->log, "[CS2S] Got event %s\n", event->GetName());
 }
