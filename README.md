@@ -143,6 +143,16 @@ meta load addons/cs2s-plugin/cs2s-plugin
 Note that I haven't actually spent time figuring out how to use the generated
 VDF file correctly (but it is present among the `package` artifacts).
 
+## TODO
+
+- Decide on a structure for `lib/`.
+    It currently contains plugin runtime utils and SDK polyfills.
+    Both (or at least the latter) could be formalized into separate projects.
+- Ensure the CMake configuration is resiliant to a name change (or make a clearer way to rename your plugin).
+- Clean up `CMakeLists.txt`.
+- Windows compatibility (not gonna bother with this in the short term).
+- Categorize links.
+
 ## References
 
 To be categorized/explained.
