@@ -1,32 +1,53 @@
 #include "library.h"
 
 #include <platform.h>
-#include <interface.h>
 
 #include "shared.h"
 
 namespace cs2s::plugin
 {
 
-LibraryService::LibraryService(LoggingChannelID_t log)
-    : Service(log)
+void* Library::Match(const uint8_t* pattern_data, size_t pattern_size) const
 {
+    auto blob = reinterpret_cast<uint8_t*>(this->address);
+    for (size_t blob_cursor{0}; blob_cursor + pattern_size < this->size; ++blob_cursor)
+    {
+        for (size_t pattern_cursor{0}; pattern_cursor < pattern_size; ++pattern_cursor)
+        {
+            if (
+                blob[blob_cursor + pattern_cursor] != pattern_data[pattern_cursor]
+                || pattern_data[pattern_cursor] == 0x2A  // Wildcard
+            )
+            {
+                goto blob_next;
+            }
+        }
 
+        // If we get through the entire loop, we matched, so return!
+        return reinterpret_cast<void*>(blob + blob_cursor);
+
+        // If we found unequal bytes, jump to here, effectively `continue`ing the outer loop
+        blob_next:;
+    }
+
+    return nullptr;
 }
 
-bool LibraryService::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
+bool PluginLibraryService::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
 {
     this->metamod = ismm;
     this->game_directory = Plat_GetGameDirectory();
+    Log_Msg(this->log, "[CS2S] Loaded library service\n");
     return true;
 }
 
-bool LibraryService::Unload(char* error, size_t maxlen)
+bool PluginLibraryService::Unload(char* error, size_t maxlen)
 {
+    Log_Msg(this->log, "[CS2S] Unloaded library service\n");
     return true;
 }
 
-Library* LibraryService::Resolve(const std::string& subpath, std::string name)
+bool PluginLibraryService::Resolve(const std::string& subpath, std::string name, Library* library)
 {
     // TODO: optimize
     std::string path = this->game_directory;
@@ -39,8 +60,8 @@ Library* LibraryService::Resolve(const std::string& subpath, std::string name)
     HINSTANCE handle = dlmount(path.c_str());
     if (!handle)
     {
-        Log_Error(this->log, "Failed to load %s/%s, tried %s\n", subpath.c_str(), name.c_str(), path.c_str());
-        return nullptr;
+        Log_Error(this->log, "[CS2S] Failed to resolve %s, tried %s\n", name.c_str(), path.c_str());
+        return false;
     }
 
     // Determine the base point and size
@@ -48,22 +69,18 @@ Library* LibraryService::Resolve(const std::string& subpath, std::string name)
     int error = dlinfo(handle, &info);
     if (error != 0)
     {
-        Log_Error(this->log, "Failed to inspect %s, received error code %d\n", path.c_str(), error);
-        return nullptr;
+        Log_Error(this->log, "[CS2S] Failed to inspect %s, received error code %d\n", path.c_str(), error);
+        return false;
     }
 
     // Return as complete struct
-    Log_Msg(this->log, "Resolved %s to %p\n", name.c_str(), handle);
-    this->libraries.emplace(
-        name,
-        Library{
-            .path = path,
-            .name = std::move(name),
-            .handle = handle,
-            .address = info.address,
-            .size = info.size
-        }
-    );
+    Log_Msg(this->log, "[CS2S] Resolved %s to %p\n", path.c_str(), handle);
+    library->path = std::move(path);
+    library->name = std::move(name);
+    library->handle = handle;
+    library->address = info.address;
+    library->size = info.size;
+    return true;
 }
 
 }

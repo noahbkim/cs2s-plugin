@@ -40,7 +40,8 @@ Once you've run `docker compose cs2s exec zsh`, you can proceed to the setup.
 git submodule update --init --recursive
 
 # Generate a release (default) and debug Conan profile for dependencies. Note
-# that you actually have to edit the second one to change it to debug!
+# that you actually have to edit the second one to change it to debug! This is
+# already done for you in the cs2s container.
 conan profile detect               # Automatically names it `default`
 conan profile detect --name debug  # Edit this such that `build_type=Debug`
 

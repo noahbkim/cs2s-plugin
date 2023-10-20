@@ -25,6 +25,8 @@ target_include_directories(cs2s-plugin PRIVATE lib/)
 target_sources(cs2s-plugin PRIVATE
         lib/cs2s/plugin/library.cpp
         lib/cs2s/plugin/shared.cpp
+        lib/cs2s/plugin/detour.cpp
+        lib/cs2s/sdk/server/recipientfilter.cpp
 )
 
 # Rewrite the plugin.vdf file to build
@@ -98,6 +100,7 @@ find_package(absl REQUIRED)
 target_link_libraries(cs2s-plugin protobuf::protobuf abseil::abseil)
 target_link_libraries(cs2s-plugin cs2proto cs2interfaces cs2libtier0 cs2tier1)
 target_include_directories(cs2s-plugin
+        PRIVATE ${cs2proto_INCLUDE}
         PRIVATE ${funchook_INCLUDE_DIRS}
         PRIVATE ${absl_INCLUDE_DIRS}
         PRIVATE ${protobuf_INCLUDE_DIRS}

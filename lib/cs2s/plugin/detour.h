@@ -3,22 +3,25 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include <funchook.h>
 
-namespace cs2s::detour
+#include "service.h"
+
+namespace cs2s::plugin
 {
 
 // The virtual destructor of `Detour` subclasses should unload the detour. This
 // allows trivial RAII management.
-class PluginDetour
+class Detour
 {
 public:
-    virtual ~PluginDetour() = default;
+    virtual ~Detour() = default;
 };
 
 template<typename T>
-class PluginFunctionDetour : public PluginDetour
+class FunctionDetour : public Detour
 {
 protected:
     T* function;  // Local function pointer we're detouring to
@@ -35,16 +38,23 @@ protected:
     bool installed{false};
 
     // Constructor is private so you have to go through a manager.
-    PluginFunctionDetour(T* function, const char* detour_name)
+    FunctionDetour(T* function, const char* detour_name)
         : function(function)
         , detour_name(detour_name)
     {}
 };
 
-class DetourManager
+class PluginDetourService : public PluginService
 {
 private:
+    std::vector<std::unique_ptr<Detour>> detours;
 
+public:
+    using PluginService::PluginService;
+
+public:
+    bool Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) override;
+    bool Unload(char* error, size_t maxlen) override;
 };
 
 }

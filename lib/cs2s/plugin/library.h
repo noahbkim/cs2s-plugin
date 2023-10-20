@@ -23,8 +23,16 @@
 #endif
 
 // Adapted heavily from https://github.com/Source2ZE/CS2Fixes/blob/main/src/gameconfig.h
+// Combines https://github.com/Source2ZE/CS2Fixes/blob/main/src/utils/module.h
 namespace cs2s::plugin
 {
+
+template<typename T>
+struct Pattern
+{
+    const uint8_t* data;
+    size_t size;
+};
 
 // Wraps introspection for shared libraries
 struct Library
@@ -34,9 +42,18 @@ struct Library
     HINSTANCE handle;
     void* address;
     size_t size;
+
+public:
+    void* Match(const uint8_t* pattern_data, size_t pattern_size) const;
+
+    template<typename T>
+    T* Match(const Pattern<T>& pattern) const
+    {
+        return reinterpret_cast<T*>(this->Match(pattern.data, pattern.size));
+    }
 };
 
-class LibraryService : public Service
+class PluginLibraryService : public PluginService
 {
 protected:
     ISmmAPI* metamod{nullptr};
@@ -44,17 +61,16 @@ protected:
 
     // Cached
     std::string game_directory;
-    absl::flat_hash_map<std::string, Library> libraries;
 
 public:
-    explicit LibraryService(LoggingChannelID_t log);
+    using PluginService::PluginService;
 
 public:
     bool Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) override;
     bool Unload(char* error, size_t maxlen) override;
 
 public:
-    virtual Library* Resolve(const std::string& subpath, std::string name);
+    virtual bool Resolve(const std::string& subpath, std::string name, Library* library);
 };
 
 }
