@@ -62,8 +62,8 @@ If you're developing locally, replace `/work` with your `cs2s-plugin` directory.
 # THIS STEP IS ALREADY DONE FOR YOU IN THE CS2S DOCKER CONTAINER.
 # Generate a release (default) and debug Conan profile for dependencies. Note
 # that you actually have to edit the second one to change it to debug!
-/work $ conan profile detect               # Automatically names it `default`
-/work $ conan profile detect --name debug  # Edit this such that `build_type=Debug`
+user@container /work $ conan profile detect               # Automatically names it `default`
+user@container /work $ conan profile detect --name debug  # Edit this such that `build_type=Debug`
 
 # Install the C++ dependencies. You don't have to install the dependencies of
 # both profiles at once, it's just here for completeness. Note that if you don't 
@@ -71,18 +71,18 @@ If you're developing locally, replace `/work` with your `cs2s-plugin` directory.
 # The directory you install everything can be named anything/placed anywhere,
 # it just has to be accessible from where you invoke CMake. I prefer to match
 # the naming scheme we'll use for the build directories.
-/work $ conan install . --build missing --output-folder conan-build-release
-/work $ conan install . --build missing --output-folder conan-build-debug --profile debug
+user@container /work $ conan install . --build missing --output-folder conan-build-release
+user@container /work $ conan install . --build missing --output-folder conan-build-debug --profile debug
 
 # Make a build directory. I tend to adhere to CLion's naming convention, but
 # you could just choose `build` if you don't wanna type so much.
-/work $ mkdir cmake-build-debug && cd cmake-build-debug
+user@container /work $ mkdir cmake-build-debug && cd cmake-build-debug
 # mkdir cmake-build-release && cd cmake-build-release
 
 # Run CMake. Note that we have to refer to the `conan_toolchain.cmake`
 # generated in the corresponding `conan install` directory to the build type
 # we want.
-/work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
+user@container /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
 # /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=release
 ```
 
@@ -106,7 +106,7 @@ This has all been wrapped up into a convenient script, `cs2s-overlay`.
 Make sure files you change are readable/executable by `steam`--it's best to just `su` whenever you're manually fiddling with them.
 The packaged `cs2s-` scripts take care of this already.
 
-```console
+```shell
 # Create a new overlay. You only have to do this once. You can name it anything
 # you want; I've chosen `main` out of a lack of creativity. Note that when your
 # container is deleted (e.g. by `docker compose down`), your overlays will be
