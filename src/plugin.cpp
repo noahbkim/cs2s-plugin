@@ -1,20 +1,15 @@
 #include "plugin.h"
 
-#include <cstdio>
 #include <stdint.h>
 
 #include <Color.h>
 
-#include <cstrike15_usermessages.pb.h>
 #include <usermessages.pb.h>
-#include <cs_gameevents.pb.h>
 #include <gameevents.pb.h>
-//#include <te.pb.h>
 
 #include <cs2s/plugin/detour.h>
 #include <cs2s/plugin/library.h>
 #include <cs2s/sdk/server/recipientfilter.h>
-#include <cs2s/common/virtual.h>
 
 #define STR_LITERAL(D) #D
 #define STR(D) STR_LITERAL(D)

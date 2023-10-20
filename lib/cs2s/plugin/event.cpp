@@ -26,11 +26,15 @@ bool PluginEventService::Load(PluginId id, ISmmAPI* ismm, char* error, size_t ma
 
 bool PluginEventService::Unload(char* error, size_t maxlen)
 {
+    // Do this by hand; we can't call `Unsubscribe` because we can't erase while iterating
+    size_t listener_count = this->listeners.size();
     for (IGameEventListener2* listener : this->listeners)
     {
-        this->Unsubscribe(listener);
+        this->game_event_manager->RemoveListener(listener);
     }
-    Log_Msg(this->log, "[CS2S:events] Unloaded event service\n");
+    this->listeners.clear();
+
+    Log_Msg(this->log, "[CS2S:events] Unsubscribed %zu listeners and unloaded event service\n", listener_count);
     return true;
 }
 
