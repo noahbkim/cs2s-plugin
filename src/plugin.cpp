@@ -75,14 +75,14 @@ bool Plugin::Unload(char* error, size_t maxlen)
 
 void Plugin::FireGameEvent(IGameEvent *event)
 {
-    Log_Msg(this->log, "[CS2S] Got event %d (%s)\n", event->GetID(), event->GetName());
+    Log_Msg(this->log, LOG_PREFIX "Got event %d (%s)\n", event->GetID(), event->GetName());
     switch (event->GetID())
     {
     case 53:
     {
         int attacker = event->GetInt(attacker_symbol);
         int victim = event->GetInt(userid_symbol);
-        std::string buffer = "[CS2S] Player " + std::to_string(attacker) + " killed " + std::to_string(victim) + "\n";
+        std::string buffer = LOG_PREFIX "Player " + std::to_string(attacker) + " killed " + std::to_string(victim) + "\n";
         this->client_print_all(HUD_PRINTTALK, buffer.c_str(), nullptr, nullptr, nullptr, nullptr);
     }
     }
