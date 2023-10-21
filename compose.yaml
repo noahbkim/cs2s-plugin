@@ -2,3 +2,4 @@ include:
   # We mount this directory as /work by overriding the ${WORK} variable in
   # cs2s/compose.yaml in our .env (path is relative to cs2s/compose.yaml).
   - path: cs2s/compose.yaml
+

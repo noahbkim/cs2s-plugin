@@ -65,14 +65,15 @@ If you're developing locally, replace `/work` with your `cs2s-plugin` directory.
 user@container /work $ conan profile detect               # Automatically names it `default`
 user@container /work $ conan profile detect --name debug  # Edit this such that `build_type=Debug`
 
+# You will have to complete this step every time you `docker compose up -d`.
 # Install the C++ dependencies. You don't have to install the dependencies of
 # both profiles at once, it's just here for completeness. Note that if you don't 
 # specify --profile, it automatically uses our default one, which is Release.
 # The directory you install everything can be named anything/placed anywhere,
 # it just has to be accessible from where you invoke CMake. I prefer to match
 # the naming scheme we'll use for the build directories.
-user@container /work $ conan install . --build missing --output-folder conan-build-release
-user@container /work $ conan install . --build missing --output-folder conan-build-debug --profile debug
+user@container /work $ conan install . --build missing --output-folder ~/conan-build-release
+user@container /work $ conan install . --build missing --output-folder ~/conan-build-debug --profile debug
 
 # Make a build directory. I tend to adhere to CLion's naming convention, but
 # you could just choose `build` if you don't wanna type so much.
@@ -82,8 +83,8 @@ user@container /work $ mkdir cmake-build-debug && cd cmake-build-debug
 # Run CMake. Note that we have to refer to the `conan_toolchain.cmake`
 # generated in the corresponding `conan install` directory to the build type
 # we want.
-user@container /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
-# /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=release
+user@container /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=~/conan-build-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
+# /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=~/conan-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=release
 ```
 
 This configuration has only been tested end-to-end in the Docker container.

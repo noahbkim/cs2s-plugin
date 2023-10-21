@@ -29,7 +29,7 @@ public:
     bool Unload() override;
 
 public:
-    void Subscribe(const char* event_name, IGameEventListener2* listener);
+    bool Subscribe(const char* event_name, IGameEventListener2* listener);
     void Unsubscribe(IGameEventListener2* listener);
 };
 

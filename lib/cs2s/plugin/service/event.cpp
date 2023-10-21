@@ -59,18 +59,25 @@ bool PluginEventService::Unload()
     return true;
 }
 
-void PluginEventService::Subscribe(const char* event_name, IGameEventListener2* listener)
+bool PluginEventService::Subscribe(const char* event_name, IGameEventListener2* listener)
 {
-    Log_Msg(this->log, LOG_PREFIX "Added listener %p to %p\n", listener, event_name);
-    this->game_event_manager->AddListener(listener, event_name, true);
+    // Error condition seems to be inverted for this function
+    if (this->game_event_manager->AddListener(listener, event_name, true))
+    {
+        Log_Error(this->log, LOG_PREFIX "Failed to add listener %p to %s\n", listener, event_name);
+        return false;
+    }
+
     this->listeners.emplace(listener);
+    Log_Msg(this->log, LOG_PREFIX "Added listener %p to %s\n", listener, event_name);
+    return true;
 }
 
 void PluginEventService::Unsubscribe(IGameEventListener2* listener)
 {
-    Log_Msg(this->log, LOG_PREFIX "Removed listener %p\n", listener);
     this->game_event_manager->RemoveListener(listener);
     this->listeners.erase(listener);
+    Log_Msg(this->log, LOG_PREFIX "Removed listener %p\n", listener);
 }
 
 }
