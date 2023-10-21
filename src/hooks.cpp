@@ -8,10 +8,13 @@ const uint8_t UTIL_CLIENT_PRINT_ALL_PATTERN[] = {0x55, 0x48, 0x89, 0xe5, 0x41, 0
 #endif
 
 // Declare hook for requested DLL function
-cs2s::plugin::Pattern<decltype(UTIL_ClientPrintAll)> UTIL_ClientPrintAllPattern{
+cs2s::plugin::service::Pattern<decltype(UTIL_ClientPrintAll)> UTIL_ClientPrintAllPattern{
     UTIL_CLIENT_PRINT_ALL_PATTERN,
     sizeof(UTIL_CLIENT_PRINT_ALL_PATTERN),
 };
 
 GameEventKeySymbol_t attacker_symbol("attacker");
 GameEventKeySymbol_t userid_symbol("userid");
+GameEventKeySymbol_t name_symbol("name");
+GameEventKeySymbol_t steamid_symbol("steamid");
+GameEventKeySymbol_t bot_symbol("bot");

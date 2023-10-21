@@ -4,7 +4,7 @@
 
 #define LOG_PREFIX "[" STR(PLUGIN_NAME) ":events] "
 
-namespace cs2s::plugin
+namespace cs2s::plugin::service
 {
 
 bool PluginDetourService::Load(PluginId id, ISmmAPI* ismm, bool late)

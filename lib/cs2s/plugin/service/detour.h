@@ -7,9 +7,9 @@
 
 #include <funchook.h>
 
-#include "service.h"
+#include "cs2s/plugin/service.h"
 
-namespace cs2s::plugin
+namespace cs2s::plugin::service
 {
 
 // The virtual destructor of `Detour` subclasses should unload the detour. This

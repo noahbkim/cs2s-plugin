@@ -8,7 +8,7 @@
 #include <ISmmPlugin.h>
 #include <metamod_oslink.h>
 
-#include "service.h"
+#include "cs2s/plugin/service.h"
 
 #ifdef WIN32
 #define ROOT_BIN_DIRECTORY "/bin/win64"
@@ -24,7 +24,7 @@
 
 // Adapted heavily from https://github.com/Source2ZE/CS2Fixes/blob/main/src/gameconfig.h
 // Combines https://github.com/Source2ZE/CS2Fixes/blob/main/src/utils/module.h
-namespace cs2s::plugin
+namespace cs2s::plugin::service
 {
 
 template<typename T>

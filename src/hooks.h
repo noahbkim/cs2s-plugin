@@ -3,7 +3,7 @@
 #include <engine/igameeventsystem.h>
 #include <igameevents.h>
 
-#include <cs2s/plugin/library.h>
+#include <cs2s/plugin/service/library.h>
 
 #define HUD_PRINTNOTIFY		1
 #define HUD_PRINTCONSOLE	2
@@ -19,7 +19,10 @@ void UTIL_ClientPrintAll(
     const char *param4 = NULL
 );
 
-extern cs2s::plugin::Pattern<decltype(UTIL_ClientPrintAll)> UTIL_ClientPrintAllPattern;
+extern cs2s::plugin::service::Pattern<decltype(UTIL_ClientPrintAll)> UTIL_ClientPrintAllPattern;
 
 extern GameEventKeySymbol_t attacker_symbol;
 extern GameEventKeySymbol_t userid_symbol;
+extern GameEventKeySymbol_t name_symbol;
+extern GameEventKeySymbol_t steamid_symbol;
+extern GameEventKeySymbol_t bot_symbol;

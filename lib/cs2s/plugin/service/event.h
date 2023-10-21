@@ -7,9 +7,9 @@
 
 #include <ISmmPlugin.h>
 
-#include "service.h"
+#include "cs2s/plugin/service.h"
 
-namespace cs2s::plugin
+namespace cs2s::plugin::service
 {
 
 class PluginEventService : public PluginService

@@ -7,7 +7,7 @@
 
 #define LOG_PREFIX "[" STR(PLUGIN_NAME) ":libraries] "
 
-namespace cs2s::plugin
+namespace cs2s::plugin::service
 {
 
 void* Library::Match(const uint8_t* pattern_data, size_t pattern_size) const
