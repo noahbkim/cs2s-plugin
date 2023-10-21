@@ -2,7 +2,7 @@
 
 #include "cs2s/common/macro.h"
 
-#define LOG_PREFIX "[" STR(CS2S_PLUGIN_NAME) ":events] "
+#define LOG_PREFIX "[" STR(PLUGIN_NAME) ":events] "
 
 namespace cs2s::plugin
 {

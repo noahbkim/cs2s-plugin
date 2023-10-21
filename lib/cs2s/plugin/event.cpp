@@ -3,7 +3,7 @@
 #include "cs2s/common/macro.h"
 #include "cs2s/common/virtual.h"
 
-#define LOG_PREFIX "[" STR(CS2S_PLUGIN_NAME) ":events] "
+#define LOG_PREFIX "[" STR(PLUGIN_NAME) ":events] "
 
 namespace cs2s::plugin
 {
@@ -55,7 +55,7 @@ bool PluginEventService::Unload()
     this->metamod = nullptr;
     this->game_event_manager = nullptr;
 
-    Log_Msg(this->log, LOG_PREFIX "Unloaded event service\n", listener_count);
+    Log_Msg(this->log, LOG_PREFIX "Unloaded event service\n");
     return true;
 }
 

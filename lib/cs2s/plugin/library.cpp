@@ -5,7 +5,7 @@
 #include "cs2s/common/macro.h"
 #include "cs2s/common/shared.h"
 
-#define LOG_PREFIX "[" STR(CS2S_PLUGIN_NAME) ":libraries] "
+#define LOG_PREFIX "[" STR(PLUGIN_NAME) ":libraries] "
 
 namespace cs2s::plugin
 {

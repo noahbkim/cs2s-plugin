@@ -6,7 +6,7 @@
 #include <cs2s/plugin/detour.h>
 #include <cs2s/plugin/library.h>
 
-#define LOG_PREFIX "[" STR(CS2S_PLUGIN_NAME) ":events] "
+#define LOG_PREFIX "[" STR(PLUGIN_NAME) "] "
 
 // Set up Source 2 logging. Provides macros like `Log_Msg`, `Log_Warning`, and
 // `Log_Error`. See tier0/logging.h for full documentation. You can change the
@@ -59,6 +59,8 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
     }
 
     this->events.Subscribe("player_death", this);
+    this->events.Subscribe("player_connect", this);
+    this->events.Subscribe("player_disconnect", this);
 
     return true;
 }
@@ -78,12 +80,17 @@ void Plugin::FireGameEvent(IGameEvent *event)
     Log_Msg(this->log, LOG_PREFIX "Got event %d (%s)\n", event->GetID(), event->GetName());
     switch (event->GetID())
     {
-    case 53:
+    case 53:  // player_death
     {
         int attacker = event->GetInt(attacker_symbol);
         int victim = event->GetInt(userid_symbol);
         std::string buffer = LOG_PREFIX "Player " + std::to_string(attacker) + " killed " + std::to_string(victim) + "\n";
         this->client_print_all(HUD_PRINTTALK, buffer.c_str(), nullptr, nullptr, nullptr, nullptr);
+        break;
     }
+    case 8:
+        break;
+    case 9:
+        break;
     }
 }

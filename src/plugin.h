@@ -10,6 +10,18 @@
 
 #include "hooks.h"
 
+struct Player
+{
+    // Intrinsic
+    uint32_t id;
+    std::string name;
+    uint64_t steam_id;
+    bool bot;
+
+    // Plugin
+    int32_t rating{0};
+};
+
 class Plugin final : public ISmmPlugin, public IMetamodListener, public IGameEventListener2
 {
 private:

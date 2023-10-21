@@ -1,5 +1,5 @@
 "Metamod Plugin"
 {
-	"alias"		"${CS2S_PLUGIN_NAME}"
-	"file"		"addons/${CS2S_PLUGIN_NAME}/cs2s-plugin"
+	"alias"		"${plugin_NAME}"
+	"file"		"addons/${plugin_NAME}/plugin"
 }
