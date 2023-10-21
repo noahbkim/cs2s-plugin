@@ -2,7 +2,10 @@
 
 #include <platform.h>
 
+#include "cs2s/common/macro.h"
 #include "cs2s/common/shared.h"
+
+#define LOG_PREFIX "[" STR(CS2S_PLUGIN_NAME) ":libraries] "
 
 namespace cs2s::plugin
 {
@@ -33,17 +36,19 @@ void* Library::Match(const uint8_t* pattern_data, size_t pattern_size) const
     return nullptr;
 }
 
-bool PluginLibraryService::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
+bool PluginLibraryService::Load(PluginId id, ISmmAPI* ismm, bool late)
 {
     this->metamod = ismm;
     this->game_directory = Plat_GetGameDirectory();
-    Log_Msg(this->log, "[CS2S:libraries] Loaded library service\n");
+    Log_Msg(this->log, LOG_PREFIX "Loaded library service\n");
     return true;
 }
 
-bool PluginLibraryService::Unload(char* error, size_t maxlen)
+bool PluginLibraryService::Unload()
 {
-    Log_Msg(this->log, "[CS2S:libraries] Unloaded library service\n");
+    this->metamod = nullptr;
+    this->game_directory.clear();
+    Log_Msg(this->log, LOG_PREFIX "Unloaded library service\n");
     return true;
 }
 
@@ -60,7 +65,7 @@ bool PluginLibraryService::Resolve(const std::string& subpath, std::string name,
     HINSTANCE handle = dlmount(path.c_str());
     if (!handle)
     {
-        Log_Error(this->log, "[CS2S:libraries] Failed to resolve %s, tried %s\n", name.c_str(), path.c_str());
+        Log_Error(this->log, LOG_PREFIX "Failed to resolve %s, tried %s\n", name.c_str(), path.c_str());
         return false;
     }
 
@@ -69,12 +74,12 @@ bool PluginLibraryService::Resolve(const std::string& subpath, std::string name,
     int error = cs2s::common::dlinfo(handle, &info);
     if (error != 0)
     {
-        Log_Error(this->log, "[CS2S:libraries] Failed to inspect %s, received error code %d\n", path.c_str(), error);
+        Log_Error(this->log, LOG_PREFIX "Failed to inspect %s, received error code %d\n", path.c_str(), error);
         return false;
     }
 
     // Return as complete struct
-    Log_Msg(this->log, "[CS2S:libraries] Resolved %s to %p\n", path.c_str(), handle);
+    Log_Msg(this->log, LOG_PREFIX "Resolved %s to %p\n", path.c_str(), handle);
     library->path = std::move(path);
     library->name = std::move(name);
     library->handle = handle;

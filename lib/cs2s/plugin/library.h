@@ -72,8 +72,8 @@ public:
     using PluginService::PluginService;
 
 public:
-    bool Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) override;
-    bool Unload(char* error, size_t maxlen) override;
+    bool Load(PluginId id, ISmmAPI* ismm, bool late) override;
+    bool Unload() override;
 
 public:
     virtual bool Resolve(const std::string& subpath, std::string name, Library* library);

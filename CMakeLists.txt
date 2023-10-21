@@ -17,6 +17,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 add_library(cs2s-plugin SHARED
+        src/hooks.cpp
         src/plugin.cpp
 )
 
@@ -27,7 +28,6 @@ target_sources(cs2s-plugin PRIVATE
         lib/cs2s/plugin/event.cpp
         lib/cs2s/plugin/detour.cpp
         lib/cs2s/common/shared.cpp
-        lib/cs2s/sdk/server/recipientfilter.cpp
 )
 
 # Rewrite the plugin.vdf file to build
@@ -38,7 +38,7 @@ configure_file(src/plugin.vdf ${cs2s_PLUGIN_FILE})
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set_target_properties(cs2s-plugin PROPERTIES LIBRARY_OUTPUT_NAME cs2s-plugin)
 set_target_properties(cs2s-plugin PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${cs2s_PACKAGE_DIR}/addons/${CMAKE_PROJECT_NAME})
-target_compile_definitions(cs2s-plugin PRIVATE CMAKE_PROJECT_NAME=${CMAKE_PROJECT_NAME})
+target_compile_definitions(cs2s-plugin PRIVATE CS2S_PLUGIN_NAME=${CMAKE_PROJECT_NAME})
 
 # https://stackoverflow.com/questions/51154151/how-to-check-what-compiler-cmake-is-using
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

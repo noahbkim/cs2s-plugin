@@ -37,7 +37,7 @@ protected:
     // State: whether this detour is installed.
     bool installed{false};
 
-    // Constructor is private so you have to go through a manager.
+    // Constructor is private, so you have to go through a manager.
     FunctionDetour(T* function, const char* detour_name)
         : function(function)
         , detour_name(detour_name)
@@ -53,8 +53,8 @@ public:
     using PluginService::PluginService;
 
 public:
-    bool Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) override;
-    bool Unload(char* error, size_t maxlen) override;
+    bool Load(PluginId id, ISmmAPI* ismm, bool late) override;
+    bool Unload() override;
 };
 
 }

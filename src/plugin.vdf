@@ -1,5 +1,5 @@
 "Metamod Plugin"
 {
-	"alias"		"${CMAKE_PROJECT_NAME}"
-	"file"		"addons/${CMAKE_PROJECT_NAME}/cs2s-plugin"
+	"alias"		"${CS2S_PLUGIN_NAME}"
+	"file"		"addons/${CS2S_PLUGIN_NAME}/cs2s-plugin"
 }
