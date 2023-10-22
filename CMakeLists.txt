@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20g)
 project(cs2s-plugin)
 
 # Unless you're adding features to this repository, you shouldn't need to edit
@@ -11,6 +11,7 @@ include(cmake/platform.cmake)
 
 # Create our plugin target; outputs a shared library.
 add_library(plugin SHARED ${plugin_SOURCES} ${plugin_LIB_SOURCES})
+target_compile_features(plugin PRIVATE cxx_std_20)
 
 # Prevent prepending "lib" and rename output
 if(NOT DEFINED plugin_OUTPUT_DIR)
