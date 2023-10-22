@@ -59,13 +59,19 @@ The included [`conanfile.txt`](./conanfile.txt) installs `protobuf` and `abseil`
 This is already done for you in the Docker image:
 
 ```shell
-# Generate a release (default) and debug Conan profile for dependencies. Note
-# that you actually have to edit the second one to change it to debug!
-user@host cs2s-plugin $ conan profile detect               # Automatically names it `default`
-user@host cs2s-plugin $ conan profile detect --name debug  # Edit this such that `build_type=Debug`
+# Generate a release (default) Conan profile. The profile you choose when
+# installing your dependencies controls how they're built.
+user@host cs2s-plugin $ conan profile detect              
+
+# For development, you'll likely want to use a debug build. To create a debug
+# profile, you'll have to manually edit the detected profile to set 
+# `build_type=Debug`. I've included a one-liner, but you may have to do it
+# manually depending on your platform.
+user@host cs2s-plugin $ conan profile detect --name debug
+user@host cs2s-plugin $ sed -i 's/^build_type=Release/build_type=Debug/' $(conan profile path debug) 
 ```
 
-In the Docker container, this repository directory, `./` is mounted as `/work`.
+In the Docker container, this repository directory, `./`, is mounted as `/work`.
 Going forward, I will tailor shell commands to Docker users.
 Users developing locally (or setting up CMake for their IDE) should interpolate `cs2s-plugin` for `/work`.
 
