@@ -11,7 +11,7 @@ Currently, I can only guarantee plugins will build in the container.
 **Before you do anything, install the dependencies vendored as submodules**.
 You will notice each command is prefixed with a full prompt; this is to distinguish between commands run on the `host` and on the Docker `container`.
 
-```console
+```shell
 # Install the vendored packages (included as submodules). Most of them clone
 # shallowly so they don't take up too much space.
 user@host cs2s-plugin $ git submodule update --init --recursive
