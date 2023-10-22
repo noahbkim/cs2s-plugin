@@ -52,39 +52,44 @@ Once the installation is complete, you can proceed to the setup.
 
 Next, you'll need to get your C++ build environment set up.
 I've elected to use CMake rather than AMBuild because I wanted to use [Conan](https://conan.io/), a C++ package manager.
-In addition slimming down the build, Conan makes it super easy to add your own dependencies to your plugin.
-As you can see in [`conanfile.txt`](./conanfile.txt), we're just installing `protobuf` and `abseil`.
+In addition to slimming down the build, Conan makes it super easy to add custom dependencies to your plugin.
+The included [`conanfile.txt`](./conanfile.txt) installs `protobuf` and `abseil`.
 
-In the Docker container, this repository directory is mounted as `/work`, which I'll use in the console prompt.
-If you're developing locally, replace `/work` with your `cs2s-plugin` directory.
+**Non-Docker users will have to create Conan profiles if they haven't already**.
+This is already done for you in the Docker image:
 
 ```shell
-# THIS STEP IS ALREADY DONE FOR YOU IN THE CS2S DOCKER CONTAINER.
 # Generate a release (default) and debug Conan profile for dependencies. Note
 # that you actually have to edit the second one to change it to debug!
-user@container /work $ conan profile detect               # Automatically names it `default`
-user@container /work $ conan profile detect --name debug  # Edit this such that `build_type=Debug`
+user@host cs2s-plugin $ conan profile detect               # Automatically names it `default`
+user@host cs2s-plugin $ conan profile detect --name debug  # Edit this such that `build_type=Debug`
+```
 
-# You will have to complete this step every time you `docker compose up -d`.
-# Install the C++ dependencies. You don't have to install the dependencies of
-# both profiles at once, it's just here for completeness. Note that if you don't 
-# specify --profile, it automatically uses our default one, which is Release.
-# The directory you install everything can be named anything/placed anywhere,
-# it just has to be accessible from where you invoke CMake. I prefer to match
-# the naming scheme we'll use for the build directories.
-user@container /work $ conan install . --build missing --output-folder ~/conan-build-release
-user@container /work $ conan install . --build missing --output-folder ~/conan-build-debug --profile debug
+In the Docker container, this repository directory, `./` is mounted as `/work`.
+Going forward, I will tailor shell commands to Docker users.
+Users developing locally (or setting up CMake for their IDE) should interpolate `cs2s-plugin` for `/work`.
 
-# Make a build directory. I tend to adhere to CLion's naming convention, but
-# you could just choose `build` if you don't wanna type so much.
+```shell
+# You'll typically only need one profile at a time; debug for development and
+# release for the final build. Commands for both are interleaved so you can
+# easily compare the two. Note that if you don't specify a --profile, Conan
+# automatically uses release. Also note that the Conan output folder can be
+# anywhere, though the current directory is convenient because it's mounted to
+# your host so you can look through it when debugging. I also prefer to match
+# the CMake folder naming scheme.
+user@container /work $ conan install . --build missing --output-folder conan-build-debug --profile debug
+user@container /work $ # conan install . --build missing --output-folder conan-build-release
+
+# Make a build directory. I adhere to CLion's naming convention, but you could
+# choose something like `build` if you don't wanna type so much. Just make sure
+# it's in the .gitignore.
 user@container /work $ mkdir cmake-build-debug && cd cmake-build-debug
-# mkdir cmake-build-release && cd cmake-build-release
+user@container /work $ # mkdir cmake-build-release && cd cmake-build-release
 
-# Run CMake. Note that we have to refer to the `conan_toolchain.cmake`
-# generated in the corresponding `conan install` directory to the build type
-# we want.
-user@container /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=~/conan-build-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
-# /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=~/conan-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=release
+# Run CMake, generating a Makefile and build config. Note the reference to the
+# Conan output and build profile.
+user@container /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
+user@container /work/cmake-build-release $ # cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=release
 ```
 
 This configuration has only been tested end-to-end in the Docker container.
@@ -93,34 +98,30 @@ It is, however, sufficient to appease CLion and get (fairly accurate) intellisen
 
 ## Development
 
-The development process is still being ironed out.
-Expect this section to change
+**The development process is still being ironed out**.
+Expect this section to change.
 For now, users who are not using the Docker Compose setup are expected to extrapolate.
 
 The `cs2s` Docker setup allows us to leverage OverlayFS to create lightweight clones of our (extremely heavy) game installation.
 We do this by compositing two layers: the lower, read-only `/cs2` volume which contains our real game installation, and the upper, read-write `tmpfs` mount where our development changes are stored.
 The result looks like a complete copy of `/cs2`, but it only needs to store files that have been changed, added, or deleted.
+This has all been wrapped up into a convenient script, `cs2s-overlay`:
 
-This has all been wrapped up into a convenient script, `cs2s-overlay`.
+```shell
+# Create a new overlay. This script is installed in /usr/local/bin, so you can
+# run it from anywhere. Overlays are installed in /home/steam, so they will be
+# erased if you `docker compose down` or otherwise delete the container.
+# Fortunately, they're extremely easy to recreate. Note the use of --addons,
+# which creates an addons directory and adds a `Game csgo/addons/metamod` to
+# the gameinfo.gi.
+root@container /work/cmake-build-debug $ cs2s-overlay add main --addons
+```
 
-**IMPORTANT**: because `SteamCMD` doesn't like to be run as root, the game installation and overlays are owned by `steam:steam`.
-Make sure files you change are readable/executable by `steam`--it's best to just `su` whenever you're manually fiddling with them.
+Because `SteamCMD` doesn't like to be run as root, the game installation and overlays are owned by `steam:steam`.
+**Make sure files you change are readable/executable by `steam`**--it's best to just `su` whenever you're manually fiddling with them.
 The packaged `cs2s-` scripts take care of this already.
 
 ```shell
-# Create a new overlay. You only have to do this once. You can name it anything
-# you want; I've chosen `main` out of a lack of creativity. Note that when your
-# container is deleted (e.g. by `docker compose down`), your overlays will be
-# erased. Only `/work` (a mount from your host machine) and `/cs2` (a virtual
-# mount configured in the `cs2s/compose.yaml` are persistent.
-root@container /work/cmake-build-debug $ cs2s-overlay add main
-
-# Next, you'll need to modify the gameinfo.gi so it properly loads Metamod.
-# TODO: there's gotta be a cleaner way to do this.
-#   Game    csgo/addons/metamod
-# Under GameInfo/FileSystem/SearchPaths
-root@container /work/cmake-build-debug $ nano ~steam/main/game/csgo/gameinfo.gi
-
 # Build your plugin--this is also how you do it if you're developing locally.
 root@container /work/cmake-build-debug $ make -j
 
@@ -129,7 +130,7 @@ root@container /work/cmake-build-debug $ make -j
 # (`addons/*` and anything else that ends up in there) into your overlay's game
 # directory, e.g. `~steam/main/game/csgo/` as well as update the permissions
 # and owners. I've included a script that automates this as well:
-root@container /work/cmake-build-debug $ cs2s-copy main
+root@container /work/cmake-build-debug $ cs2s-overlay install main package
 
 # You can the run the server either manually (you must `su steam` for it to
 # work property) or use the overlay script (which `exec`s as `steam`):
@@ -139,7 +140,7 @@ root@container /work/cmake-build-debug $ cs2s-overlay start main
 # From there, the usual metamod steps apply. Note that currently, it builds a
 # verbose but safe plugin structure, so you have to write (in the console).
 # You can create a symlink in `csgo` to type less :)
-meta load addons/cs2s-plugin/cs2s-plugin
+meta load addons/cs2s-plugin/plugin
 ```
 
 Note that I haven't actually spent time figuring out how to use the generated

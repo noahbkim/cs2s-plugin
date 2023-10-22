@@ -61,13 +61,7 @@ bool PluginEventService::Unload()
 
 bool PluginEventService::Subscribe(const char* event_name, IGameEventListener2* listener)
 {
-    // Error condition seems to be inverted for this function
-    if (this->game_event_manager->AddListener(listener, event_name, true))
-    {
-        Log_Error(this->log, LOG_PREFIX "Failed to add listener %p to %s\n", listener, event_name);
-        return false;
-    }
-
+    this->game_event_manager->AddListener(listener, event_name, true);
     this->listeners.emplace(listener);
     Log_Msg(this->log, LOG_PREFIX "Added listener %p to %s\n", listener, event_name);
     return true;
