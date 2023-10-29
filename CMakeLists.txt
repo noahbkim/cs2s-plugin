@@ -29,6 +29,7 @@ elseif(WIN32)
         target_compile_options(plugin PRIVATE /MT)
     endif()
 else()
+    target_compile_definitions(plugin PRIVATE NOMINMAX)
     message(WARNING "plugin is not configured for this platform!")
 endif()
 
@@ -39,7 +40,7 @@ target_include_directories(plugin PRIVATE ${funchook_INCLUDE_DIRS})
 
 # Include hl2sdk (vendored)
 include(cmake/hl2sdk.cmake)
-target_link_libraries(plugin hl2sdk::interfaces hl2sdk::tier0 hl2sdk::tier1)
+target_link_libraries(plugin hl2sdk::interfaces hl2sdk::tier0 hl2sdk::tier1 hl2sdk::steam)
 
 # Include metamod (vendored)
 include(cmake/metamod.cmake)
