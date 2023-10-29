@@ -17,8 +17,8 @@ if(LINUX AND CMAKE_SIZEOF_VOID_P EQUAL 8)
 elseif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
     # I still wanna use this for my editor
     message(WARNING "metamod binary directory is not configured for this platform!")
-    set(metamod_BINARY_DIR ${metamod_BUILD_DIR}/core/metamod.2.cs2/win32-x86_64)
-    set(metamod_METAMOD_BINARY ${metamod_BINARY_DIR}/metamod.2.cs2.dll)
+    set(metamod_BINARY_DIR ${metamod_BUILD_DIR}/core/metamod.2.cs2/windows-x86_64)
+    set(metamod_METAMOD_BINARY ${metamod_BINARY_DIR}/metamod.2.cs2.lib)
 else()
     message(FATAL_ERROR "metamod binary directory is not configured for this platform!")
 endif()
@@ -32,7 +32,7 @@ ExternalProject_Add(
             ${CMAKE_COMMAND} -E env HL2SDKCS2=${hl2sdk_SOURCE_DIR}
                 python3 ${metamod_SOURCE_DIR}/configure.py
                     --sdks cs2 --disable-auto-versioning
-        BUILD_COMMAND ambuild
+        BUILD_COMMAND ${CMAKE_COMMAND} -E env HL2SDKCS2=${hl2sdk_SOURCE_DIR} ambuild
         INSTALL_COMMAND ""
         BUILD_BYPRODUCTS ${metamod_METAMOD_BINARY}
 )

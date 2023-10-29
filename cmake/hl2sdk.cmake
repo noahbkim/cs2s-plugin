@@ -4,6 +4,7 @@ set(hl2sdk_SOURCE_DIR ${CMAKE_SOURCE_DIR}/vendor/hl2sdk)
 set(hl2sdk_INCLUDE_DIRS
         ${hl2sdk_SOURCE_DIR}/public
         ${hl2sdk_SOURCE_DIR}/public/engine
+        ${hl2sdk_SOURCE_DIR}/public/entity2
         ${hl2sdk_SOURCE_DIR}/public/mathlib
         ${hl2sdk_SOURCE_DIR}/public/vstdlib
         ${hl2sdk_SOURCE_DIR}/public/tier0
@@ -56,6 +57,15 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_definitions(hl2sdk::tier0 INTERFACE COMPILER_MSVC)
     target_compile_definitions(hl2sdk::tier1 INTERFACE COMPILER_MSVC)
 
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        target_compile_definitions(hl2sdk::interfaces INTERFACE COMPILER_MSVC64 _AMD64_)
+        target_compile_definitions(hl2sdk::tier0 INTERFACE COMPILER_MSVC64 _AMD64_)
+        target_compile_definitions(hl2sdk::tier1 INTERFACE COMPILER_MSVC64 _AMD64_)
+    else()
+        target_compile_definitions(hl2sdk::interfaces INTERFACE COMPILER_MSVC32 _X86_)
+        target_compile_definitions(hl2sdk::tier0 INTERFACE COMPILER_MSVC32 _X86_)
+        target_compile_definitions(hl2sdk::tier1 INTERFACE COMPILER_MSVC32 _X86_)
+    endif()
 else()
     message(FATAL_ERROR "cs2metamod has not been configured for this compiler!")
 endif()

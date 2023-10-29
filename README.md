@@ -39,6 +39,8 @@ user@host cs2s-plugin $ docker compose cs2s exec zsh
 # `docker compose cs2s exec bash`.
 user@container /work $
 
+# You can skip to the next step; this last command is included for reference.
+
 # You can leave the container running in the background without a shell
 # attached (and it'll take up minimal resources because it won't be executing
 # anything). If you do want to close it (to rebuild the image, save resources,
@@ -46,17 +48,38 @@ user@container /work $
 user@host cs2s-plugin $ docker compose down
 ```
 
-Once the installation is complete, you can proceed to the setup.
+Once you've started the container, you'll want to install CS2.
+I've included a script that does this for you via SteamCMD:
+
+```shell
+# For the sake of your security, please read through this bash script before
+# you run it (it requires your Steam credentials).
+user@container /work $ cs2s-install
+
+# If you would prefer to run the commands yourself, I've outlined it below.
+# Note the use of /cs2, which is a mounted Docker volume that will persist
+# between container runs.
+user@container /work $ su steam -c steamcmd  # Must run a steam user
+force_install_dir /cs2
+login <username>
+app_update 730 validate
+quit
+```
 
 ## Setup
 
 Next, you'll need to get your C++ build environment set up.
+As prerequisites, install the following:
+
+1. A recent [Python 3](https://www.python.org/downloads/)
+2. [AMBuild](https://github.com/alliedmodders/ambuild) from AlliedModders.
+
 I've elected to use CMake rather than AMBuild because I wanted to use [Conan](https://conan.io/), a C++ package manager.
 In addition to slimming down the build, Conan makes it super easy to add custom dependencies to your plugin.
 The included [`conanfile.txt`](./conanfile.txt) installs `protobuf` and `abseil`.
 
-**Non-Docker users will have to create Conan profiles if they haven't already**.
-This is already done for you in the Docker image:
+Non-Docker users will have to create Conan profiles if they haven't already.
+**This is already done for you in the Docker image**:
 
 ```shell
 # Generate a release (default) Conan profile. The profile you choose when
@@ -154,13 +177,9 @@ VDF file correctly (but it is present among the `package` artifacts).
 
 ## TODO
 
-- Make a volume for conan dependencies so we don't have to recompile them every time!
 - Decide on a structure for `lib/`.
     It currently contains plugin runtime utils and SDK polyfills.
     Both (or at least the latter) could be formalized into separate projects.
-- Ensure the CMake configuration is resiliant to a name change (or make a clearer way to rename your plugin).
-- Clean up `CMakeLists.txt`.
-- Windows compatibility (not gonna bother with this in the short term).
 - Categorize links.
 
 ## References

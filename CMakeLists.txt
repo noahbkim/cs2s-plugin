@@ -23,6 +23,11 @@ if(LINUX)
     target_link_options(plugin PRIVATE -static-libgcc)
     target_compile_definitions(plugin PRIVATE stricmp=strcasecmp _stricmp=strcasecmp _snprintf=snprintf _vsnprintf=vsnprintf _alloca=alloca)
     target_compile_options(plugin PRIVATE -fPIC -fno-exceptions -fno-rtti -msse -fno-strict-aliasing)
+elseif(WIN32)
+    target_compile_definitions(plugin PRIVATE NOMINMAX)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        target_compile_options(plugin PRIVATE /MT)
+    endif()
 else()
     message(WARNING "plugin is not configured for this platform!")
 endif()
@@ -61,7 +66,11 @@ target_compile_definitions(plugin PRIVATE PLUGIN_NAME=${plugin_NAME})
 set_target_properties(plugin PROPERTIES
         PREFIX ""  # Remove lib prefix
         LIBRARY_OUTPUT_NAME plugin  # Always name the library file "plugin"
+        RUNTIME_OUTPUT_NAME plugin  # Always name the library file "plugin"
         LIBRARY_OUTPUT_DIRECTORY ${plugin_OUTPUT_DIR}/addons/${plugin_NAME}
+        RUNTIME_OUTPUT_DIRECTORY ${plugin_OUTPUT_DIR}/addons/${plugin_NAME}
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${plugin_OUTPUT_DIR}/addons/${plugin_NAME}  # Windows
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${plugin_OUTPUT_DIR}/addons/${plugin_NAME}
 )
 
 # Rewrite the plugin.vdf file to build
