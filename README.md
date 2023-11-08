@@ -99,26 +99,31 @@ Going forward, I will tailor shell commands to Docker users.
 Users developing locally (or setting up CMake for their IDE) should interpolate `cs2s-plugin` for `/work`.
 
 ```shell
+# The best I could come up with for vendoring protobuf 3.21.8 with modified
+# compilation options was to include it as a Conan recipe that must be locally
+# installed. This is the only way I could get the `protobuf_generate` command
+# to be available in our CMake configuration.
+user@container /work $ conan create vendor/cs2s-protobuf
+
 # You'll typically only need one profile at a time; debug for development and
 # release for the final build. Commands for both are interleaved so you can
 # easily compare the two. Note that if you don't specify a --profile, Conan
 # automatically uses release. Also note that the Conan output folder can be
 # anywhere, though the current directory is convenient because it's mounted to
-# your host so you can look through it when debugging. I also prefer to match
-# the CMake folder naming scheme.
-user@container /work $ conan install . --build missing --output-folder conan-build-debug --profile debug
-user@container /work $ # conan install . --build missing --output-folder conan-build-release
+# your host so you can look through it when debugging.
+user@container /work $ conan install . --build missing --output-folder conan-debug --profile debug
+user@container /work $ # conan install . --build missing --output-folder conan-release
 
 # Make a build directory. I adhere to CLion's naming convention, but you could
 # choose something like `build` if you don't wanna type so much. Just make sure
 # it's in the .gitignore.
-user@container /work $ mkdir cmake-build-debug && cd cmake-build-debug
-user@container /work $ # mkdir cmake-build-release && cd cmake-build-release
+user@container /work $ mkdir build-debug && cd build-debug
+user@container /work $ # mkdir build-release && cd build-release
 
 # Run CMake, generating a Makefile and build config. Note the reference to the
 # Conan output and build profile.
-user@container /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
-user@container /work/cmake-build-release $ # cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-build-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=release
+user@container /work/cmake-build-debug $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=debug
+user@container /work/cmake-build-release $ # cmake .. -DCMAKE_TOOLCHAIN_FILE=../conan-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=release
 ```
 
 This configuration has only been tested end-to-end in the Docker container.

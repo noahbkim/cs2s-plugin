@@ -1,6 +1,8 @@
 # Build
 /cmake-build-*
 /conan-build-*
+/build-*
+/conan-*
 /build
 
 # Testing

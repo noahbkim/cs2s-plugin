@@ -7,15 +7,15 @@
 
 #include <ISmmPlugin.h>
 
-#include <cs2s/plugin/service/library.h>
-#include <cs2s/plugin/service/event.h>
+#include <cs2s/service/library.h>
+#include <cs2s/service/event.h>
 
 class Plugin final : public ISmmPlugin, public IMetamodListener
 {
 private:
     LoggingChannelID_t log;
-    cs2s::plugin::service::PluginLibraryService libraries;
-    cs2s::plugin::service::PluginEventService events;
+    cs2s::service::PluginLibraryService libraries;
+    cs2s::service::PluginEventService events;
 
     // Derived
     ISmmAPI* metamod{nullptr};

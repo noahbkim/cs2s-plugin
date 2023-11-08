@@ -1,5 +1,5 @@
 [requires]
-protobuf/3.21.12
+protobuf/3.21.8+cs2  # First run `conan create vendor/cs2s-protobuf`
 abseil/20230125.3
 
 [generators]

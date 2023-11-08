@@ -5,13 +5,23 @@
 [submodule "cs2s"]
 	path = cs2s
 	url = git@github.com:noahbkim/cs2s.git
+	shallow = true
 [submodule "vendor/metamod-source"]
 	path = vendor/metamod-source
 	url = https://github.com/alliedmodders/metamod-source
 	shallow = true
 	ignore = dirty
+# Shallow cloning appears to be broken for this repository
 [submodule "vendor/hl2sdk"]
 	path = vendor/hl2sdk
 	url = https://github.com/alliedmodders/hl2sdk
 	branch = cs2
 	ignore = dirty
+[submodule "vendor/cs2s-protobuf"]
+	path = vendor/cs2s-protobuf
+	url = https://github.com/noahbkim/cs2s-protobuf
+	shallow = true
+[submodule "vendor/cs2s-sdk"]
+	path = vendor/cs2s-sdk
+	url = https://github.com/noahbkim/cs2s-sdk
+	shallow = true

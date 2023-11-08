@@ -4,7 +4,7 @@
 
 #include <Color.h>
 
-#include <cs2s/common/macro.h>
+#include <cs2s/macro.h>
 
 #define LOG_PREFIX "[" STR(PLUGIN_NAME) "] "
 
@@ -43,7 +43,7 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
         return false;
     }
 
-    cs2s::plugin::service::Library server_library;
+    cs2s::service::Library server_library;
     if (!this->libraries.Resolve(GAME_BIN_DIRECTORY, "server", &server_library))
     {
         ismm->Format(error, maxlen, "failed to resolve server library");

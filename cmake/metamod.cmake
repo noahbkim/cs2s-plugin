@@ -15,8 +15,6 @@ if(LINUX AND CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(metamod_BINARY_DIR ${metamod_BUILD_DIR}/core/metamod.2.cs2/linux-x86_64)
     set(metamod_METAMOD_BINARY ${metamod_BINARY_DIR}/metamod.2.cs2.so)
 elseif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    # I still wanna use this for my editor
-    message(WARNING "metamod binary directory is not configured for this platform!")
     set(metamod_BINARY_DIR ${metamod_BUILD_DIR}/core/metamod.2.cs2/windows-x86_64)
     set(metamod_METAMOD_BINARY ${metamod_BINARY_DIR}/metamod.2.cs2.lib)
 else()
@@ -47,11 +45,9 @@ add_dependencies(metamod metamod_build)
 
 if(LINUX)
     set_target_properties(metamod PROPERTIES IMPORTED_LOCATION ${metamod_METAMOD_BINARY})
-
 elseif(WIN32)
     set_target_properties(metamod PROPERTIES IMPORTED_IMPLIB ${metamod_METAMOD_BINARY})
     set_target_properties(metamod PROPERTIES IMPORTED_LOCATION ${metamod_METAMOD_BINARY})
-
 else()
     message(SEND_ERROR "metamod has not been configured for this platform!")
 endif()
