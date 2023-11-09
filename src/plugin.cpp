@@ -50,6 +50,9 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
         return false;
     }
 
+    // Subscribe to the `weapon_fire` game event. Note that `Plugin` must
+    // inherit from `IGameEventListener2` (and implement `FireGameEvent`) for
+    // this to work.
     this->events.Subscribe("weapon_fire", this);
 
     return true;
@@ -59,12 +62,17 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
 // plugin with `meta unload addons/cs2s-plugin`.
 bool Plugin::Unload(char* error, size_t maxlen)
 {
+    // Automatically unsubscribes any event handlers we added.
     this->events.Unload();
+
     this->messages.Unload();
 
     return true;
 }
 
+// This function is called when a player fires a weapon on our server. Event
+// subscription is handled by the call to `this->events.Subscribe` in the
+// `Plugin::Load` method above.
 void Plugin::FireGameEvent(IGameEvent* event)
 {
     if (event->GetID() == 158)

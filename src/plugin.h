@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <tier0/logging.h>
-#include <igameeventsystem.h>
+#include <igameeventsystem.h>  // Required by igameevents.h
 #include <igameevents.h>
 
 #include <ISmmPlugin.h>
