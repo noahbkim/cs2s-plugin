@@ -25,3 +25,7 @@
 	path = vendor/cs2s-sdk
 	url = https://github.com/noahbkim/cs2s-sdk
 	shallow = true
+[submodule "vendor/whereami"]
+	path = vendor/whereami
+	url = https://github.com/gpakosz/whereami
+	shallow = true

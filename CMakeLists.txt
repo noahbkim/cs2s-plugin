@@ -62,6 +62,7 @@ target_link_libraries(plugin protos)
 # Google. I've included it by default as an alternative to the STL containers
 # but using it is optional. Provided via Conan (see conanfile.txt).
 # https://github.com/abseil/abseil-cpp
+# TODO: https://github.com/abseil/abseil-cpp/issues/1554
 #find_package(absl REQUIRED)
 #target_link_libraries(plugin abseil::abseil)
 #target_include_directories(plugin PRIVATE ${absl_INCLUDE_DIRS})

@@ -11,7 +11,7 @@
 // Set up Source 2 logging. Provides macros like `Log_Msg`, `Log_Warning`, and
 // `Log_Error`. See tier0/logging.h for full documentation. You can change the
 // color of this channel by adding your own RGB values to the `Color()`.
-DEFINE_LOGGING_CHANNEL_NO_TAGS(LOG_CS2S, STR(CS2S_PLUGIN_NAME), 0, LV_MAX, Color());
+DEFINE_LOGGING_CHANNEL_NO_TAGS(LOG_CS2S, STR(PLUGIN_NAME), 0, LV_MAX, Color());
 
 // A static instance of the plugin loaded by Metamod. Note the use of
 // `PLUGIN_EXPOSE`, which also declares a bunch of global variables for
