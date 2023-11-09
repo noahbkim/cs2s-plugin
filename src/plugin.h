@@ -4,18 +4,20 @@
 #include <vector>
 
 #include <tier0/logging.h>
+#include <igameeventsystem.h>
+#include <igameevents.h>
 
 #include <ISmmPlugin.h>
 
-#include <cs2s/service/library.h>
+#include <cs2s/service/message.h>
 #include <cs2s/service/event.h>
 
-class Plugin final : public ISmmPlugin, public IMetamodListener
+class Plugin final : public ISmmPlugin, public IMetamodListener, public IGameEventListener2
 {
 private:
     LoggingChannelID_t log;
-    cs2s::service::PluginLibraryService libraries;
     cs2s::service::PluginEventService events;
+    cs2s::service::PluginMessageService messages;
 
     // Derived
     ISmmAPI* metamod{nullptr};
@@ -40,4 +42,7 @@ public:
     const char* GetVersion() override { return "0.1"; };
     const char* GetDate() override { return "2023-10-18"; };
     const char* GetLogTag() override { return "cs2s-plugin"; };
+
+public:
+    void FireGameEvent(IGameEvent *event) override;
 };

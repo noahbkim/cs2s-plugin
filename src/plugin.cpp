@@ -13,14 +13,16 @@
 // color of this channel by adding your own RGB values to the `Color()`.
 DEFINE_LOGGING_CHANNEL_NO_TAGS(LOG_CS2S, STR(CS2S_PLUGIN_NAME), 0, LV_MAX, Color());
 
-// A static instance of the plugin loaded by Metamod.
+// A static instance of the plugin loaded by Metamod. Note the use of
+// `PLUGIN_EXPOSE`, which also declares a bunch of global variables for
+// tracking parts of the server interface.
 Plugin g_Plugin(LOG_CS2S);
-PL_EXPOSURE_FUNC(Plugin, g_Plugin);
+PLUGIN_EXPOSE(Plugin, g_Plugin);
 
 Plugin::Plugin(LoggingChannelID_t log)
     : log(log)
-    , libraries(log)
     , events(log)
+    , messages(log)
 {
 }
 
@@ -29,13 +31,12 @@ Plugin::Plugin(LoggingChannelID_t log)
 // path and name) in your server console.
 bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
 {
-    this->metamod = ismm;
+    // The global variables assigned here are declared by `PLUGIN_EXPOSE` and
+    // used by a variety of metamod macros. I do not recommend removing it
+    // unless you know what you're doing.
+    PLUGIN_SAVEVARS();
 
-    if (!this->libraries.Load(id, ismm, late))
-    {
-        ismm->Format(error, maxlen, "failed to load library service");
-        return false;
-    }
+    this->metamod = ismm;
 
     if (!this->events.Load(id, ismm, late))
     {
@@ -43,12 +44,13 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
         return false;
     }
 
-    cs2s::service::Library server_library;
-    if (!this->libraries.Resolve(GAME_BIN_DIRECTORY, "server", &server_library))
+    if (!this->messages.Load(id, ismm, late))
     {
-        ismm->Format(error, maxlen, "failed to resolve server library");
+        ismm->Format(error, maxlen, "failed to load messages service");
         return false;
     }
+
+    this->events.Subscribe("weapon_fire", this);
 
     return true;
 }
@@ -57,8 +59,17 @@ bool Plugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool l
 // plugin with `meta unload addons/cs2s-plugin`.
 bool Plugin::Unload(char* error, size_t maxlen)
 {
-    this->libraries.Unload();
     this->events.Unload();
+    this->messages.Unload();
 
     return true;
+}
+
+void Plugin::FireGameEvent(IGameEvent* event)
+{
+    if (event->GetID() == 158)
+    {
+        int player_slot = event->GetPlayerSlot("userid").Get();
+        this->messages.Print(HUD_PRINTTALK, "weapon_fire from player %d\n", player_slot);
+    }
 }
