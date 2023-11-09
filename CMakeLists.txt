@@ -47,7 +47,7 @@ target_include_directories(plugin PRIVATE ${cs2s_sdk_INCLUDE_DIR})
 # 3.21.8 compiled with `_GLIBCXX_USE_CXX11_ABI=0` if on gcc. This is already
 # handled for you via our custom Conan recipe, instructions in the README.md.
 # https://github.com/noahbkim/cs2s-protobuf
-find_package(Protobuf REQUIRED)
+find_package(protobuf REQUIRED)
 target_link_libraries(plugin protobuf::protobuf)
 
 # You're also gonna need the proto definitions, which we've vendored from
