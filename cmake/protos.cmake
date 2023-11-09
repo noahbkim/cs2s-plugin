@@ -1,6 +1,6 @@
 include_guard()
 
-find_package(Protobuf REQUIRED)
+find_package(protobuf REQUIRED)
 
 set(protos_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/protos)
 set(protos_INCLUDE_DIR ${protos_BUILD_DIR})
