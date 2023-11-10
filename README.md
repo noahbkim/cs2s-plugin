@@ -19,7 +19,8 @@ user@host cs2s-plugin $ git submodule update --init --recursive
 
 Next, optionally, build the Docker environment.
 This requires having Docker installed; I've only tested with Docker Desktop.
-If you would rather develop directly on your machine, the only thing you need to do for this section is install CS2.
+If you would rather develop directly on your machine, the only thing you need to do for this section is install CS2--ideally with SteamCMD.
+**Do not use the Steam installation you play on**, as having third-party software installed on it could get you banned.
 
 ```shell
 # Build the compose setup. Provisions a persistent volume for the game files
