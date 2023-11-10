@@ -1,7 +1,7 @@
 # CS2 Server Plugin Template
 
 This repository serves as a template for developing CS2 server plugins.
-It uses CMake instead of AMBuild, but in exchange, the is much more flexible regarding build steps and dependencies.
+It uses CMake instead of AMBuild, but in exchange, is much more flexible regarding build steps and dependencies.
 
 ## CS2S
 
