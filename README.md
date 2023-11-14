@@ -62,7 +62,7 @@ user@container /work $ cs2s-install
 # between container runs.
 user@container /work $ su steam -c steamcmd  # Must run a steam user
 force_install_dir /cs2
-login <username>
+login anonymous
 app_update 730 validate
 quit
 ```
